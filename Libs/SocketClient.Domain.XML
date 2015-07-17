@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SocketClient.Domain</name>
+    </assembly>
+    <members>
+        <member name="T:SocketClient.Domain.GenSocketClient`1">
+            <summary>
+            Socket Client 交訊傳入物件
+            </summary>
+            <typeparam name="T">要傳輸的物件類型</typeparam>
+        </member>
+        <member name="M:SocketClient.Domain.ISocketClient`1.ConnectToServer">
+            <summary>
+            連結遠端主機
+            </summary>
+            <returns>連線成功/連線失敗</returns>
+        </member>
+        <member name="M:SocketClient.Domain.ISocketClient`1.SendAndReceive(`0)">
+            <summary>
+            傳送和接收要處理的物件
+            </summary>
+            <param name="poco">Client端送出的物件</param>
+            <returns>遠端主機傳送的物件</returns>
+        </member>
+        <member name="M:SocketClient.Domain.GenSocketClient`1.ThrowSettingError">
+            <summary>
+            使用無參數的建構子但未輸入IP或Port丟出的例外
+            </summary>
+            <param name="ip">Null或""</param>
+            <param name="port">0</param>
+        </member>
+        <member name="M:SocketClient.Domain.GenSocketClient`1.SendAndReceive(`0)">
+            <summary>
+            輸入傳輸物件等待回傳物件的結果
+            </summary>
+            <param name="poco">要傳輸的物件</param>
+            <returns>傳回Server處理完的物件</returns>
+        </member>
+        <member name="M:SocketClient.Domain.ISocketClient.ConnectToServer">
+            <summary>
+            連結遠端主機
+            </summary>
+            <returns>連線成功/連線失敗</returns>
+        </member>
+        <member name="M:SocketClient.Domain.ISocketClient.SendAndReceive(System.Byte[])">
+            <summary>
+            傳送和接收要處理的物件
+            </summary>
+            <param name="poco">Client端送出的物件</param>
+            <returns>遠端主機傳送的物件</returns>
+        </member>
+        <member name="M:SocketClient.Domain.ISocketClient.SendAndReceive(System.Byte[],System.Net.Sockets.SocketError@)">
+            <summary>
+            同步傳送byte array和接收byte array並out出SocketError狀態
+            </summary>
+            <param name="poco">傳送的data(byte array)</param>
+            <param name="socketErr">output SocketError(socket狀態)</param>
+            <returns>接收到的data(byte array)/失敗則回傳null</returns>
+        </member>
+        <member name="T:SocketClient.Domain.SocketClient">
+            <summary>
+            Socket Client 交訊傳入物件
+            </summary>
+            <typeparam name="T">要傳輸的物件類型</typeparam>
+        </member>
+        <member name="M:SocketClient.Domain.SocketClient.#ctor(System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            指定連線遠端的IP和Port預設送出和收到逾時為0
+            </summary>
+            <param name="ip">遠端IP</param>
+            <param name="port">遠端Port</param>
+            <param name="sendTimeout">送出逾時(ms)</param>
+            <param name="receiveTimeout">收到逾時(ms)</param>
+        </member>
+        <member name="M:SocketClient.Domain.SocketClient.#ctor(System.String,System.Int32,System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            連線遠端並指定本地端IP和Port
+            </summary>
+            <param name="remoteIP">遠端IP</param>
+            <param name="remotePort">遠端Port</param>
+            <param name="localIP">本地端IP</param>
+            <param name="localPort">本地端Port</param>
+            <param name="sendTimeout">Send Timeout(default:0ms)</param>
+            <param name="receiveTimeout">Receive Timeout(default:0ms)</param>
+        </member>
+        <member name="M:SocketClient.Domain.SocketClient.#ctor">
+            <summary>
+            自行設定遠端IP和Port(沒設定會拋出異常)
+            </summary>
+        </member>
+        <member name="M:SocketClient.Domain.SocketClient.ThrowSettingError">
+            <summary>
+            使用無參數的建構子但未輸入IP或Port丟出的例外
+            </summary>
+            <param name="ip">Null或""</param>
+            <param name="port">0</param>
+        </member>
+        <member name="M:SocketClient.Domain.SocketClient.ConnectToServer">
+            <summary>
+            Socket連線遠端
+            </summary>
+            <returns>成功/失敗</returns>
+        </member>
+        <member name="M:SocketClient.Domain.SocketClient.SendAndReceive(System.Byte[])">
+            <summary>
+            輸入傳輸物件等待回傳物件的結果
+            </summary>
+            <param name="poco">要傳輸的物件</param>
+            <returns>傳回Server處理完的物件</returns>
+        </member>
+        <member name="M:SocketClient.Domain.SocketClient.SendAndReceive(System.Byte[],System.Net.Sockets.SocketError@)">
+            <summary>
+            輸入傳輸物件等待回傳物件的結果
+            </summary>
+            <param name="poco">要傳輸的物件</param>
+            <returns>傳回Server處理完的物件</returns>
+        </member>
+        <member name="M:SocketClient.Domain.SocketClient.SocketConnect(System.Net.Sockets.Socket)">
+            <summary>
+            檢查Socket連線狀態(可讀狀態且有資料可讀取)
+            </summary>
+            <param name="sck">被檢測的Socket</param>
+            <returns>連線True/False斷線</returns>
+        </member>
+        <member name="M:SocketClient.Domain.SocketClient.CloseConnection">
+            <summary>
+            關閉Socket Client連結
+            </summary>
+        </member>
+        <member name="P:SocketClient.Domain.SocketClient.OnCatchException">
+            <summary>
+            抓內部Socket的Exception
+            </summary>
+        </member>
+        <member name="T:SocketClient.Domain.SocketClient.CatchException">
+            <summary>
+            抓取Exception
+            </summary>
+            <param name="ex"></param>
+        </member>
+        <member name="M:SocketClient.Domain.Utilities.ISerializer`1.Serialize(`0)">
+            <summary>
+            Serialize POCO entity to string
+            </summary>
+            <param name="entity">POCO entity</param>
+            <returns>utf8 string</returns>
+        </member>
+        <member name="M:SocketClient.Domain.Utilities.ISerializer`1.Serialize2Bytes(`0)">
+            <summary>
+            Serialize POCO entity to byte[]
+            </summary>
+            <param name="entity">POCO entity</param>
+            <returns>byte[]</returns>
+        </member>
+        <member name="M:SocketClient.Domain.Utilities.ISerializer`1.Deserialize(System.String)">
+            <summary>
+            Deserialize string back to POCO
+            </summary>
+            <param name="serialized">serialized string</param>
+            <returns>POCO entity</returns>
+        </member>
+        <member name="M:SocketClient.Domain.Utilities.ISerializer`1.Deserialize(System.Byte[])">
+            <summary>
+            Deserialize byte[] back to POCO
+            </summary>
+            <param name="serialized">serialized byte[]</param>
+            <returns>POCO entity</returns>
+        </member>
+    </members>
+</doc>
