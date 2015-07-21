@@ -36,7 +36,16 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonUtility\AbsHexWorker.cs" />
+    <Compile Include="CommonUtility\ByteWorker.cs" />
+    <Compile Include="CommonUtility\HexConverter.cs" />
+    <Compile Include="CommonUtility\HexWorkerByArr.cs" />
+    <Compile Include="CommonUtility\IByteWorker.cs" />
+    <Compile Include="CommonUtility\IHexConverter.cs" />
+    <Compile Include="CommonUtility\IHexWorker.cs" />
+    <Compile Include="IPaddingHelper.cs" />
     <Compile Include="ISymCryptor.cs" />
+    <Compile Include="Pkcs7PaddingHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="SymCryptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
