@@ -92,7 +92,7 @@ namespace Crypto
         {
             int left = src[src.Length - 1];//直接看陣列最後一個資料,值即padding數量
             //若最後一個Padding元素大於0且小於BlockSize
-            if (left > 0 && left < this.BlockSize)
+            if (left > 0 && left <= this.BlockSize)
             {
                 byte[] unPaddingArr = new byte[src.Length - left];
                 for (int i = 0; i < unPaddingArr.Length; i++)
@@ -135,6 +135,12 @@ namespace Crypto
                 //從來源資料流個別讀取一個Block資料放在buffer並寫到目的資料流
                 while ((readCnt = src.Read(buffer, 0, buffer.Length)) > 0)
                 {
+                    //若來源資料流指標位置為最後一個有Pading過的block範圍內,則只寫真實剩餘資料部分
+                    if (src.Position > (src.Length - this.BlockSize))
+                    {
+                        dest.Write(buffer, 0, (this.BlockSize - left));
+                        break;
+                    }
                     dest.Write(buffer, 0, readCnt);
                 }
 
