@@ -4,5 +4,25 @@
         <name>Proxy</name>
     </assembly>
     <members>
+        <member name="T:Proxy.AuthenticateHandler">
+            <summary>
+            3 Pass Authentication
+            </summary>
+        </member>
+        <member name="T:Proxy.CardValidationHandler">
+            <summary>
+            檢核卡號有效性,連到AP的檢查服務6103
+            </summary>
+        </member>
+        <member name="M:Proxy.CardValidationHandler.CheckCard(System.String,System.String,System.Int32)">
+            <summary>
+            傳入卡號,去後台AP檢查有效性(port:6103)
+            000000:Pass/990001:後台錯誤/990003:黑名單/990012:非有效卡或非聯名卡或非正常卡
+            </summary>
+            <param name="icc_No"></param>
+            <param name="ip"></param>
+            <param name="port"></param>
+            <returns>Return Code(若傳輸異常回傳null)</returns>
+        </member>
     </members>
 </doc>

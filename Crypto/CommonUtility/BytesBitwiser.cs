@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Crypto.CommonUtility
 {
+    /// <summary>
+    /// 提供陣列左移bit或右移bit的方法物件
+    /// </summary>
     public class BytesBitwiser : IBytesBitwiser
     {
         private static readonly byte MSB_BYTE = (byte)0x80;
@@ -24,6 +27,7 @@ namespace Crypto.CommonUtility
 
         /// <summary>
         /// 將Byte Array所有元素向左移 n bit
+        /// 並捨棄掉陣列第一個元素的最高有效位元(即最後一個陣列元素的最低位元補0)
         /// ex:
         /// {129,130}=>{ 10000001,10000010}
         /// 左移1bit,會將第1個bit丟掉
@@ -114,11 +118,22 @@ namespace Crypto.CommonUtility
             return bytes;
         }
 
+        /// <summary>
+        /// 將Byte Array所有元素向右移 n bit 
+        /// 並捨棄掉陣列最後一個元素的最低有效位元(即第一個陣列元素的最高位元補0)
+        /// ex:
+        /// {129,129}=>{ 10000001,10000001}
+        /// 右移1bit,會將第1個bit丟掉
+        /// { 01000000, 11000000 } => { 64, 192 }
+        /// </summary>
+        /// <param name="srcBytes">要右移的陣列來源</param>
+        /// <param name="shiftCnt">要右移幾bit</param>
+        /// <returns>右移後的陣列</returns>
         public byte[] ShiftRight(byte[] srcBytes, int shiftCnt)
         {
             byte[] bytes = new byte[srcBytes.Length];
             Array.Copy(srcBytes, bytes, srcBytes.Length);
-            //
+            //看要跑幾次bit右移的方法
             for (int i = 0; i < shiftCnt; i++)
             {
                 shiftRight(ref bytes);
@@ -196,6 +211,7 @@ namespace Crypto.CommonUtility
 
         /// <summary>
         ///   op1 XOR op2  with bits of the byte array 
+        ///   陣列A和陣列B所有元素作XOR後,回傳新陣列
         /// </summary>
         /// <param name="op1">byte array1</param>
         /// <param name="op2">byte array2</param>
@@ -230,8 +246,8 @@ namespace Crypto.CommonUtility
         /// </summary>
         public byte[] CMacPadding(byte[] srcBytes)
         {
-            int blockCnt = srcBytes.Length / 16;
-            int lastBytes = srcBytes.Length % 16;
+            int blockCnt = srcBytes.Length / 16;//被切割的總份數
+            int lastBytes = srcBytes.Length % 16;//切割後剩餘的部分,有多的就要再補一個block
             byte[] padded = null;
             //若非一個完整的Block
             if (lastBytes != 0)
@@ -239,7 +255,8 @@ namespace Crypto.CommonUtility
                 blockCnt += 1;//增一個block作Padding用
                 padded = new byte[blockCnt * 16];
                 Array.Copy(srcBytes, 0, padded, 0, srcBytes.Length);
-                padded[srcBytes.Length] = 0x80;//設定最後一個陣列Padding的資料(這是規格)
+                padded[srcBytes.Length] = 0x80;//原始陣列資料的最後一個元素的後面設定Padding值,ex:[0x1,0x2,0x3,0x80,,,,,,,]
+                //將剩餘的補0 ex:[0x1,0x2,0x3,0x80,0,0,0,0,0,0,0]
                 for (int i = srcBytes.Length + 1; i < padded.Length; i++)
                 {
                     padded[i] = 0;
@@ -247,7 +264,7 @@ namespace Crypto.CommonUtility
             }
             else
             {
-                //陣列可以被完整切割,無剩餘的
+                //陣列可以被完整切割,無剩餘的(不增加Padding的Block,單純複製原本的陣列傳回)
                 padded = new byte[srcBytes.Length];
                 Array.Copy(srcBytes, 0, padded, 0, srcBytes.Length);
             }

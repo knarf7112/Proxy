@@ -6,16 +6,19 @@ using System.Text;
 using System.Web;
 namespace Proxy
 {
-    public class AuthenticateHandler : IHttpHandler
+    /// <summary>
+    /// 3 Pass Authentication
+    /// </summary>
+    public class AuthenticateHandler : CardValidationHandler,IHttpHandler
     {
         public bool IsReusable
         {
-            get { throw new NotImplementedException(); }
+            get { return false; }
         }
 
-        public void ProcessRequest(HttpContext context)
+        public override void ProcessRequest(HttpContext context)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
