@@ -52,8 +52,18 @@ namespace Crypto
         /// <returns>plain data</returns>
         byte[] Decrypt(byte[] encryptedData);
 
+        /// <summary>
+        /// 從已解密(或無加密)的資料流讀取資料後,加密資料並寫入到資料流
+        /// </summary>
+        /// <param name="decryptedFile">解密(或無加密)的資料流</param>
+        /// <param name="encryptedFile">要加密的資料流</param>
         void Encrypt(Stream decryptedFile, Stream encryptedFile);
 
+        /// <summary>
+        /// 從已加密的資料流讀取資料後,解密資料並寫入到資料流
+        /// </summary>
+        /// <param name="encryptedFile">資料已加密的資料流</param>
+        /// <param name="decryptedFile">要解密的資料流</param>
         void Decrypt(Stream encryptedFile, Stream decryptedFile);
     }
 }

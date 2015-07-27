@@ -12,7 +12,7 @@ namespace Crypto
     public class SymCryptor : ISymCryptor, IDisposable
     {
         #region Private Field
-        private SymmetricAlgorithm _symmetricAlogithm;
+        private SymmetricAlgorithm _symmetricAlogithm;//用對稱式加解密演算類別
         private int bufferSize = 4096;//initial default buffer
         #endregion
 
@@ -55,22 +55,41 @@ namespace Crypto
         }
         #endregion
 
+        /// <summary>
+        /// 設定加解密的Key
+        /// </summary>
+        /// <param name="key">加解密用的金鑰</param>
         public void SetKey(byte[] key)
         {
             this._symmetricAlogithm.Key = key;
         }
 
+        /// <summary>
+        /// initial vector
+        /// 設定加解密用的初始值
+        /// </summary>
+        /// <param name="iv"></param>
         public void SetIV(byte[] iv)
         {
             this._symmetricAlogithm.IV = iv;
         }
 
+        /// <summary>
+        /// 設定演算編碼方式(使用CBC模式,不Padding)
+        /// </summary>
+        /// <param name="alg"></param>
         public void SetAlgorithm(string alg)
         {
             // keep padding none!
             this.SetAlgorithm(alg, CipherMode.CBC, PaddingMode.None);
         }
 
+        /// <summary>
+        /// 設定演算物件的指定密碼編譯方式
+        /// </summary>
+        /// <param name="alg">指定的密碼編譯</param>
+        /// <param name="cipherMode">加密區塊的作業模式</param>
+        /// <param name="paddingMode">補BlockSize的方式</param>
         public void SetAlgorithm(string alg, CipherMode cipherMode, PaddingMode paddingMode)
         {
             this._symmetricAlogithm = SymmetricAlgorithm.Create(alg);
@@ -116,10 +135,10 @@ namespace Crypto
 
             using (ICryptoTransform encryptor = this._symmetricAlogithm.CreateEncryptor())
             {
-                //將加密資料流包裝並注入加密演算子物件
+                //從已解密(或無加密)的資料流讀取資料後,加密資料並寫入到資料流
                 using (CryptoStream cryptoStream = new CryptoStream(encryptedFile, encryptor, CryptoStreamMode.Write))
                 {
-                    //
+                    //讀取資料丟到要加密的資料流,同時加密並寫入
                     while ((readCnt = decryptedFile.Read(buffer,0,buffer.Length)) > 0)
                     {
                         cryptoStream.Write(buffer, 0, readCnt);
@@ -135,8 +154,10 @@ namespace Crypto
 
             using (ICryptoTransform cryptor = this._symmetricAlogithm.CreateDecryptor())
             {
+                //從已加密的資料流讀取資料後,解密資料並寫入到資料流
                 using (CryptoStream cryptoStream = new CryptoStream(decryptedFile, cryptor, CryptoStreamMode.Write))
                 {
+                    //讀取已加密資料的資料流,同時解密並寫入資料流
                     while ((readCnt = encryptedFile.Read(buffer, 0, buffer.Length)) > 0)
                     {
                         cryptoStream.Write(buffer, 0, readCnt);
@@ -184,13 +205,13 @@ namespace Crypto
                 {
                     //將加密或解密的資料寫入MemoryStream裡面,最後再輸出memoryStream裡面的資料
                     cryptoStream.Write(data, 0, data.Length);
-                    //如果沒寫入,強制寫入
-                    if (!cryptoStream.HasFlushedFinalBlock)
-                    {
-                        cryptoStream.FlushFinalBlock();
-                    }
+                    ////如果沒寫入,強制寫入
+                    //if (!cryptoStream.HasFlushedFinalBlock)
+                    //{
+                    //    cryptoStream.FlushFinalBlock();
+                    //}
                 }
-                return ms.ToArray();
+                return ms.ToArray();//將加解密後的結果輸出(在資料流內)
             }
         }
         #endregion

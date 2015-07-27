@@ -83,6 +83,7 @@ namespace Crypto.CommonUtility
             {
                 sb.Append(this.HexWorker.Byte2Hex(b));
             }
+            //string hexString = BitConverter.ToString(dataBytes, 0, dataBytes.Length).Replace('-', ' ');
             return sb.ToString();
         }
 

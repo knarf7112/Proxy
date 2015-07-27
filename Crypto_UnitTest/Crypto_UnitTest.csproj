@@ -53,6 +53,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="CommenUtility\BytesBitwiser_UnitTest.cs" />
+    <Compile Include="CommenUtility\ByteWorker_UnitTest.cs" />
     <Compile Include="CommenUtility\HexConverter_UnitTest.cs" />
     <Compile Include="Pkcs7Padding_UnitTest.cs" />
     <Compile Include="SymCryptor_UnitTest.cs" />

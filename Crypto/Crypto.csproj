@@ -46,6 +46,8 @@
     <Compile Include="CommonUtility\IByteWorker.cs" />
     <Compile Include="CommonUtility\IHexConverter.cs" />
     <Compile Include="CommonUtility\IHexWorker.cs" />
+    <Compile Include="CommonUtility\IRandWorker.cs" />
+    <Compile Include="CommonUtility\RandomWorker.cs" />
     <Compile Include="HashWorker.cs" />
     <Compile Include="ICMacWorker.cs" />
     <Compile Include="IHashWorker.cs" />

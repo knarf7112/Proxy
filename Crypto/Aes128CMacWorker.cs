@@ -34,7 +34,7 @@ namespace Crypto
 
         public ISymCryptor AesCryptor { private get; set; }
 
-        public HexConverter HexConverter { private get; set; }
+        public IHexConverter HexConverter { private get; set; }
 
         private byte[] macKey = null;//
         private int macLength = ConstBlockSize;
@@ -46,13 +46,17 @@ namespace Crypto
         /// <summary>
         /// 設定DataInput
         /// </summary>
-        /// <param name="m"></param>
+        /// <param name="m">要加密的資料</param>
         public void DataInput(byte[] m)
         {
             this.dataInput = new byte[m.Length];
             Array.Copy(m, this.dataInput, m.Length);
         }
 
+        /// <summary>
+        /// 設定加密金鑰
+        /// </summary>
+        /// <param name="key">加密金鑰</param>
         public void SetMacKey(byte[] key)
         {
             this.macKey = new byte[key.Length];
@@ -63,6 +67,10 @@ namespace Crypto
             //this.getSubKeys();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="macLength"></param>
         public void SetMacLength(int macLength)
         {
             //若key長度超過Block的Size
@@ -73,21 +81,54 @@ namespace Crypto
             this.macLength = macLength;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetMac()
         {
-            //byte[] fullMac = this.
-            throw new NotImplementedException();
+            byte[] fullMac = this.getFullMac(this.dataInput);
+            if (this.macLength == ConstBlockSize)
+            {
+                return fullMac;
+            }
+            //byte[] macBytes = new byte[this.macLength];
+            //Array.Copy(fullMac, 0, macBytes, 0, this.macLength);
+            //return macBytes;
+
+            return this.ByteWorker.SubArray(fullMac, 0, this.macLength);
         }
 
+        /// <summary>
+        /// Every odd bytes( strat from 0 ){1,3,5,7,9,11,13,15} from 16-byte standard CMAC
+        /// 抽取資料陣列的奇數字節的資料
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetOdd()
         {
-            throw new NotImplementedException();
+            byte[] fullMac = this.getFullMac(this.dataInput);
+            Console.WriteLine("Full Mac: " + this.HexConverter.Bytes2Hex(fullMac));
+            byte[] resultBytes = new byte[this.macLength / 2];
+
+            for (int i = 0, j = 1; j < fullMac.Length; i++, j+=2)
+            {
+                resultBytes[i] = fullMac[j];//取陣列的奇數字節資料 ex: [1],[3],[5],[7],[9],[11],...
+            }
+            return resultBytes;
         }
 
+        /// <summary>
+        /// 設定加解密時的初始值
+        /// </summary>
+        /// <param name="iv">initial vector</param>
         public void SetIV(byte[] iv)
         {
-            throw new NotImplementedException();
+            this.iv = new byte[iv.Length];
+            Array.Copy(iv, this.iv, iv.Length);
+            //this.AesCryptor.SetIV(this.iv);
+            this.k1 = this.k2 = null;
         }
+
         #region Private 
         /*
    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -137,23 +178,85 @@ namespace Crypto
          */
         private byte[] getFullMac(byte[] inputData)
         {
+            //----------------------------------------------
+            // 1.檢查k值
             if (this.k1 == null)
             {
                 this.AesCryptor.SetIV(ConstZero);//設定演算物件的初始值
                 this.getSubKeys();//設定k1,k2
             }
+            //----------------------------------------------
+            // 2.檢查資料是否需要補Padding(資料尾部處理)
+
             bool needPadding = false;
             int nBlock = inputData.Length / ConstBlockSize;//資料是否可被blockSize整除(沒剩資料)
+            //資料不到一個BlockSize
             if (nBlock == 0)
             {
-                nBlock = 1;
+                nBlock = 1;//補一個block
                 needPadding = true;
+            }
+            //資料超過一個BlockSize
+            else
+            {
+                //資料除BlockSize後沒剩餘 , ex: 資料長度為2048 除16(BlockSize)後沒有餘數但也不補padding
+                if (inputData.Length % ConstBlockSize == 0)
+                {
+                    needPadding = false;//不需要padding
+                }
+                else
+                {
+                    needPadding = true;
+                    nBlock += 1;
+                }
+            }
+            //----------------------------------------------
+            // 3.開始處理資料尾部並依規格和k1或k2作XOR
+
+            byte[] mLast;// = new byte[ConstBlockSize];//存資料尾部(最後一個block)
+            //若不需要padding
+            if (!needPadding)
+            {
+                // M_last := M_n XOR K1;//input資料取最後一個block和K1作XOR的結果
+                //Array.Copy(inputData, inputData.Length - ConstBlockSize, mLast, 0, ConstBlockSize);
+                mLast = this.BytesBitwiser.ExclusiveOr
+                    (
+                        this.ByteWorker.SubArray(inputData, inputData.Length - ConstBlockSize, ConstBlockSize),//input資料取最後一個Block
+                        this.k1
+                    );
             }
             else
             {
-                //toDO...................
+                //M_last := padding(M_n) XOR K2;//input資料作Padding後和k2作XOR的結果
+                int lastBlockSize = inputData.Length % ConstBlockSize;//取得剩餘資料大小
+                //Padding data
+                mLast = this.BytesBitwiser.CMacPadding
+                    (
+                        this.ByteWorker.SubArray(inputData,inputData.Length - lastBlockSize,lastBlockSize) //取inputData最後一個block(資料不足1個block)
+                    );
+                Console.WriteLine("last block: " + this.HexConverter.Bytes2Hex(mLast));
+                //do XOR with k2
+                mLast = this.BytesBitwiser.ExclusiveOr(mLast, this.k2);
+                Console.WriteLine("last block xor k2: " + this.HexConverter.Bytes2Hex(mLast));
             }
-            return null;
+            //----------------------------------------------
+            // 4.開始合併處理完的尾部資料
+
+            //前半部(切割完整Block大小的input資料) + 後半部(剩餘input資料,依上面規格作完Padding且XOR完畢的)
+            byte[] diverseData = this.ByteWorker.Combine
+                (
+                    this.ByteWorker.SubArray(inputData, 0, (nBlock - 1) * ConstBlockSize),
+                    mLast
+                );
+            Console.WriteLine("diverseData: " + this.HexConverter.Bytes2Hex(diverseData));
+            //----------------------------------------------
+            // 5.設定IV後加密資料並回傳加密資料的最後一塊資料
+
+            this.AesCryptor.SetIV(this.iv);
+            byte[] result = this.AesCryptor.Encrypt(diverseData);//開始使用AES加密
+
+            //回傳加密後的最後一塊(block)資料
+            return this.ByteWorker.SubArray(result, result.Length - ConstBlockSize, ConstBlockSize);
         }
 
 
