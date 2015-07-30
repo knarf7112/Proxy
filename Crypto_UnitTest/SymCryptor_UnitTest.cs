@@ -93,7 +93,7 @@ namespace Crypto_UnitTest
             byte[] result = this.symCryptor.Decrypt(Convert.FromBase64String(base64Result));
             for (int srcIndex = 0; srcIndex < srcBytes.Length; srcIndex++)
             {
-                Assert.AreEqual(srcBytes[srcIndex], result[srcIndex]);
+                Assert.AreEqual(srcBytes[srcIndex], result[srcIndex]);//比對陣列所有Byte
             }
         }
 
@@ -158,15 +158,15 @@ namespace Crypto_UnitTest
             Debug.WriteLine("IV:" + this.hexConverter.Bytes2Hex(SymCryptor.ConstZero));
             //
             string decryptedHex =
-                "3838303130303031" + "81A400000330000200";
+                "3838303130303031" + "81A400000330000200";//未加密的Session Key
 
             byte[] data = this.hexConverter.Hex2Bytes(decryptedHex);
             string expected =
-                "2090E1E2DFA15DD9F74C90B3A17E6A646617DB7F8BF5845E1E4909051DD6232A";
+                "2090E1E2DFA15DD9F74C90B3A17E6A646617DB7F8BF5845E1E4909051DD6232A";//預期加密後的Session Key
 
             byte[] resultBytes = this.symCryptor.Encrypt(this.paddingHelper.AddPadding(data));
             string hexResult = this.hexConverter.Bytes2Hex(resultBytes);
-            Debug.WriteLine(hexResult);
+            Debug.WriteLine("Encrypt SessionKey:" + hexResult);//實際加密後的Session Key
             Assert.AreEqual(expected, hexResult);
         }
 
@@ -180,8 +180,8 @@ namespace Crypto_UnitTest
             Debug.WriteLine("IV:" + this.hexConverter.Bytes2Hex(SymCryptor.ConstZero));
             //
             string encryptedHex =
-                // "2090E1E2DFA15DD9F74C90B3A17E6A646617DB7F8BF5845E1E4909051DD6232A";
-               "3855536C2FB9D7526BD5F5DD7A74CDC22DD537B453073BC39307BCE543A86E5BA370BB2F4A2DC77C1885B5DE3413A8C46E60021FB8FACBABDA8B0B6D917A7207A07F20641D22C2A75D1077E4FF9D9422BA33CDE6CAB63A5E74F9BBF703762CFB55B7B7772B6B31C022D7BEBC62A9E430769C7B9E7B803A987D44A05119F605B95CC0F7B253C81CB7A7751C6628B46289";
+                 "2090E1E2DFA15DD9F74C90B3A17E6A646617DB7F8BF5845E1E4909051DD6232A";
+               //"3855536C2FB9D7526BD5F5DD7A74CDC22DD537B453073BC39307BCE543A86E5BA370BB2F4A2DC77C1885B5DE3413A8C46E60021FB8FACBABDA8B0B6D917A7207A07F20641D22C2A75D1077E4FF9D9422BA33CDE6CAB63A5E74F9BBF703762CFB55B7B7772B6B31C022D7BEBC62A9E430769C7B9E7B803A987D44A05119F605B95CC0F7B253C81CB7A7751C6628B46289";
 
             byte[] data = this.hexConverter.Hex2Bytes(encryptedHex);
             byte[] resultBytes0 = this.symCryptor.Decrypt(data);
@@ -202,41 +202,52 @@ namespace Crypto_UnitTest
             //this.symCryptor.SetIv(SymCryptor.ConstZero);
             //log.Debug("IV:" + this.hexConverter.Bytes2Hex(SymCryptor.ConstZero));
             //
-            Assembly assembly = Assembly.Load("Kms.Crypto.UnitTest");
-            using (Stream src = assembly.GetManifestResourceStream(@"Kms.Crypto.UnitTest.dec_BRQA_567_20141225_B06B_01"))
+            string padFilePath = AppDomain.CurrentDomain.BaseDirectory + @"\pad.dat";//放Padding過的檔案
+            string encFilePath = AppDomain.CurrentDomain.BaseDirectory + @"\enc.dat";//放加密後的檔案
+            Assembly assembly = Assembly.Load("Crypto_UnitTest");
+            using (Stream src = assembly.GetManifestResourceStream(@"Crypto_UnitTest.TestFile.dec_BRQA_567_20141225_B06B_01"))
             {
-                using (Stream padSrc = new FileStream(@"d:\temp\pad.dat", FileMode.Create, FileAccess.Write))
+                using (Stream padSrc = new FileStream(padFilePath, FileMode.Create, FileAccess.Write))
                 {
-                    this.paddingHelper.AddPadding(src, padSrc);
+                    this.paddingHelper.AddPadding(src, padSrc);//檔案大小依Pkcs7規定補Block
                 }
             }
-            using (Stream padSrc = new FileStream(@"d:\temp\pad.dat", FileMode.Open, FileAccess.Read))
+            //讀取Padding過的檔案
+            using (Stream padSrc = new FileStream(padFilePath, FileMode.Open, FileAccess.Read))
             {
-                using (Stream enc = new FileStream(@"d:\temp\enc.dat", FileMode.Create, FileAccess.Write))
+                //創建要寫入加密檔案的資料流
+                using (Stream enc = new FileStream(encFilePath, FileMode.Create, FileAccess.Write))
                 {
+                    //開始使用AES128加密物件寫入加密資料
                     this.symCryptor.Encrypt(padSrc, enc);
                 }
             }
-            File.Delete(@"d:\temp\pad.dat");
+            //刪除Padding過的檔案
+            File.Delete(padFilePath);
         }
 
         [TestMethod]
         public void Test02_DecryptFile()
         {
-            string tid = "860406320AAB3680";
+            //string tid = "860406320AAB3680";
+            string keyString = "0123456789abcdef";//AES用的加解密金鑰字串
+            string hexKeyString = this.hexConverter.Str2Hex(keyString);//AES用的加解密金鑰轉hex
             this.symCryptor.SetIV(SymCryptor.ConstZero);
-            this.symCryptor.SetKey(this.hexConverter.Hex2Bytes(tid + tid));
+            this.symCryptor.SetKey(this.hexConverter.Hex2Bytes(hexKeyString));//tid + tid));
             //
-            using (Stream encSrc = new FileStream(@"d:\temp\860406320AAB3680.enc", FileMode.Open, FileAccess.Read))
+            string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\enc.dat";//\860406320AAB3680.enc";//設定加密檔案的路徑
+            string padFilePath = AppDomain.CurrentDomain.BaseDirectory + @"\pad.dat";//設定解密後還存在Padding的檔案路徑
+            string nopadFilePath = AppDomain.CurrentDomain.BaseDirectory + @"\nopad.dat";//設定解密後移除Padding後的檔案路徑
+            using (Stream encSrc = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
-                using (Stream padDecSrc = new FileStream(@"d:\temp\pad.dat", FileMode.Create, FileAccess.Write))
+                using (Stream padDecSrc = new FileStream(padFilePath, FileMode.Create, FileAccess.Write))
                 {
                     this.symCryptor.Decrypt(encSrc, padDecSrc);
                 }
             }
-            using (Stream padDecSrc = new FileStream(@"d:\temp\pad.dat", FileMode.Open, FileAccess.Read))
+            using (Stream padDecSrc = new FileStream(padFilePath, FileMode.Open, FileAccess.Read))
             {
-                using (Stream decSrc = new FileStream(@"d:\temp\nopad.dat", FileMode.Create, FileAccess.Write))
+                using (Stream decSrc = new FileStream(nopadFilePath, FileMode.Create, FileAccess.Write))
                 {
                     this.paddingHelper.RemovePadding(padDecSrc, decSrc);
                 }
@@ -247,7 +258,7 @@ namespace Crypto_UnitTest
         [TestCleanup]
         public void CLear()
         {
-
+            //if(File.Exists(filePath))
         }
     }
 }

@@ -34,6 +34,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto", "Crypto\Crypto.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto_UnitTest", "Crypto_UnitTest\Crypto_UnitTest.csproj", "{3A9FB81B-34F5-4F9E-892C-1C31AA96A0ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto.EskmsAPI", "Crypto.EskmsAPI\Crypto.EskmsAPI.csproj", "{0DED6403-0A91-48D6-9D7F-54D40E0904EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto.EskmsAPI_UnitTest", "Crypto.EskmsAPI_UnitTest\Crypto.EskmsAPI_UnitTest.csproj", "{D4358AAE-457B-49E2-AC98-7700185F62C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +64,14 @@ Global
 		{3A9FB81B-34F5-4F9E-892C-1C31AA96A0ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A9FB81B-34F5-4F9E-892C-1C31AA96A0ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A9FB81B-34F5-4F9E-892C-1C31AA96A0ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DED6403-0A91-48D6-9D7F-54D40E0904EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DED6403-0A91-48D6-9D7F-54D40E0904EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DED6403-0A91-48D6-9D7F-54D40E0904EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DED6403-0A91-48D6-9D7F-54D40E0904EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4358AAE-457B-49E2-AC98-7700185F62C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4358AAE-457B-49E2-AC98-7700185F62C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4358AAE-457B-49E2-AC98-7700185F62C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4358AAE-457B-49E2-AC98-7700185F62C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

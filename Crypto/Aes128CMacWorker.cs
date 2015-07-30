@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 //
 using Crypto.CommonUtility;
+using System.Diagnostics;
 
 namespace Crypto
 {
@@ -12,6 +13,7 @@ namespace Crypto
     /// Recommendation for Block Cipher Modes of Operation: 
     /// The CMAC(Cipher-based Message Authentication Code) Mode for Authentication
     /// http://csrc.nist.gov/publications/nistpubs/800-38B/SP_800-38B.pdf
+    /// </summary>
     public class Aes128CMacWorker : ICMacWorker
     {
 
@@ -259,7 +261,13 @@ namespace Crypto
             return this.ByteWorker.SubArray(result, result.Length - ConstBlockSize, ConstBlockSize);
         }
 
-
+        /// <summary>
+        /// 若無最高有效位數則陣列串連並左移1bit
+        /// 若有最高有效位數則陣列串連並左移1bit後再和ConstRb作XOR
+        /// 回傳結果陣列
+        /// </summary>
+        /// <param name="kx"></param>
+        /// <returns></returns>
         private byte[] getNextSubKey(byte[] kx)
         {
             byte[] k;
@@ -278,20 +286,20 @@ namespace Crypto
         }
 
         /// <summary>
-        /// 使用AesCryptor加密ConstZero設定K0,k1,k2
+        /// 使用AesCryptor加密ConstZero取得K0並設定k1,k2
         /// </summary>
         private void getSubKeys()
         {
             //get k0
             //AES(K, 16-byte 0s).
             byte[] k0 = this.AesCryptor.Encrypt(ConstZero);
-            Console.WriteLine("K0: 0x" + this.HexConverter.Bytes2Hex(k0)); 
+            Debug.WriteLine("K0: 0x" + this.HexConverter.Bytes2Hex(k0)); 
             //
             this.k1 = this.getNextSubKey(k0);//1.先左移 1 bit
-            Console.WriteLine("K1: 0x" + this.HexConverter.Bytes2Hex(this.k1));
+            Debug.WriteLine("K1: 0x" + this.HexConverter.Bytes2Hex(this.k1));
             //
             this.k2 = this.getNextSubKey(k1);//2.再左移 1 bit 再和 ConstRb 作 XOR
-            Console.WriteLine("K2: 0x" + this.HexConverter.Bytes2Hex(this.k2)); 
+            Debug.WriteLine("K2: 0x" + this.HexConverter.Bytes2Hex(this.k2)); 
         }
         #endregion
     }
