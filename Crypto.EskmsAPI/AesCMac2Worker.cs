@@ -8,6 +8,7 @@ using Crypto.CommonUtility;
 namespace Crypto.EskmsAPI
 {
     /// <summary>
+    /// 依指定的規格的把對稱式加解密子物件包在裡面使用,並依指定規格寫邏輯
     /// NIST Special Publication 800-38B 
     /// Recommendation for Block Cipher Modes of Operation: 
     /// The CMAC(Cipher-based Message Authentication Code) Mode for Authentication
@@ -49,7 +50,7 @@ namespace Crypto.EskmsAPI
         public IByteWorker ByteWorker { private get; set; }
         public IBytesBitwiser BytesBitwiser { private get; set; }
         public HexConverter HexConverter { private get; set; }
-        public IEsKmsWebApi EsKmsWebApi { private get; set; }
+        public EsKmsWebApi EsKmsWebApi { private get; set; }
 
         public ISymCryptor SymCryptor { private get; set; }
         #endregion
@@ -66,7 +67,7 @@ namespace Crypto.EskmsAPI
         #endregion
         public void SetIV(byte[] iv)
         {
-            
+            this.SymCryptor.SetIV(iv);
         }
         /// <summary>
         /// 要加解密的資料寫入

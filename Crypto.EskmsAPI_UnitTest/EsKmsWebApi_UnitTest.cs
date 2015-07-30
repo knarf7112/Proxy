@@ -22,7 +22,7 @@ namespace Crypto.EskmsAPI_UnitTest
         {
             this.esKmsWebApi = new EsKmsWebApi()
             {
-                Url = "http://10.27.68.163:8080/eGATEsKMS/interface",
+                Url = "http://127.0.0.1:8081/eGATEsKMS/interface",//"http://10.27.68.163:8080/eGATEsKMS/interface",
                 AppCode = "APP_001",
                 AuthCode = "12345678",
                 AppName = "icash2Test",
@@ -117,8 +117,8 @@ namespace Crypto.EskmsAPI_UnitTest
         {
             string expected = "17AB67F130169FB3C012B2DD17985365";
             string uid = "04873ABA8D2C80";
-            byte[] iv = this.hexConverter.Hex2Bytes("00000000000000000000000000000000");               
-            byte[] result = this.esKmsWebApi.Decrypt("2ICH3F000032A", iv, this.hexConverter.Hex2Bytes("0104873ABA8D2C80494341534804873A9B330A45CCB51DDE66FDD7EABD400895"));//0104873ABA8D2C80494341534804873ABA8D2C80494341534804873ABA8D2C80"));
+            byte[] iv = this.hexConverter.Hex2Bytes("00000000000000000000000000000000");
+            byte[] result = this.esKmsWebApi.Encrypt("2ICH3F000004A", iv, this.hexConverter.Hex2Bytes("0104873ABA8D2C80494341534804873ABA8D2C80494341534804873ABA8D2C80"));//"0104873ABA8D2C80494341534804873A9B330A45CCB51DDE66FDD7EABD400895"));//0104873ABA8D2C80494341534804873ABA8D2C80494341534804873ABA8D2C80"));
             Debug.WriteLine("DivKey:\t" + BitConverter.ToString(result));
             //Assert.AreEqual()
         }
