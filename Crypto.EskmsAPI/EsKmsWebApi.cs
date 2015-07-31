@@ -38,8 +38,6 @@ namespace Crypto.EskmsAPI
         #endregion
         public EsKmsWebApi() 
         {
-            
-            
             this.HashWorker = new HashWorker();//用SHA1
             this.HexConverter = new HexConverter();
         }

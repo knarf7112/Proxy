@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<EsKmsWebApi>
+  <Url>http://127.0.0.1:8081/eGATEsKMS/interface</Url>
+  <AppCode>APP_001</AppCode>
+  <AuthCode>12345678</AuthCode>
+  <AppName>icash2Test</AppName>
+  <HttpMethod>POST</HttpMethod>
+</EsKmsWebApi>

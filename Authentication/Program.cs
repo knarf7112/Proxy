@@ -5,12 +5,27 @@ using System.Linq;
 using System.Text;
 //
 using System.Security.Cryptography;
+using System.Xml.Serialization;
 
 namespace Authentication
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public class Test
+        {
+            public String value1;
+            public String value2;
+        }
+
+        public static void Main()
+        {
+            Test myTest = new Test() { value1 = "Value 1", value2 = "Value 2" };
+            XmlSerializer x = new XmlSerializer(myTest.GetType());
+            x.Serialize(Console.Out, myTest);
+            
+            Console.ReadKey();
+        }
+        static void Main1(string[] args)
         {
             //準備資料
             string inFileName = AppDomain.CurrentDomain.BaseDirectory + "test.txt";         //要被加密的原始資料路徑

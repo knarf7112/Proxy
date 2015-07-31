@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto.EskmsAPI_UnitTest", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomGenerator", "RandomGenerator\RandomGenerator.csproj", "{3AFA7AC7-BC1F-4C92-A788-AA82EF1DF4F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlFileParse", "XmlFileParse\XmlFileParse.csproj", "{DC93AC13-BE59-4813-BE12-F5447C0703B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{3AFA7AC7-BC1F-4C92-A788-AA82EF1DF4F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AFA7AC7-BC1F-4C92-A788-AA82EF1DF4F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AFA7AC7-BC1F-4C92-A788-AA82EF1DF4F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC93AC13-BE59-4813-BE12-F5447C0703B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC93AC13-BE59-4813-BE12-F5447C0703B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC93AC13-BE59-4813-BE12-F5447C0703B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC93AC13-BE59-4813-BE12-F5447C0703B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

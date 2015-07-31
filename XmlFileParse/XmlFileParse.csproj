@@ -4,24 +4,22 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0DED6403-0A91-48D6-9D7F-54D40E0904EA}</ProjectGuid>
+    <ProjectGuid>{DC93AC13-BE59-4813-BE12-F5447C0703B1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Crypto.EskmsAPI</RootNamespace>
-    <AssemblyName>Crypto.EskmsAPI</AssemblyName>
+    <RootNamespace>XmlFileParse</RootNamespace>
+    <AssemblyName>XmlFileParse</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,37 +29,19 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EsKmsApi.cs" />
-    <Compile Include="EsKmsWebApi.cs" />
-    <Compile Include="iBonAuthenticate.cs" />
-    <Compile Include="ICMac2Worker.cs" />
-    <Compile Include="IEsKmsApi.cs" />
-    <Compile Include="IEsKmsWebApi.cs" />
-    <Compile Include="IKey2Deriver.cs" />
+    <Compile Include="XmlLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XmlObject.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\EsKmsWebApiConfig.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="eskmsapi.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="TestXml\Test1.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Crypto\Crypto.csproj">
-      <Project>{2ae34b10-5d50-498b-917f-7107b49b654e}</Project>
-      <Name>Crypto</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
