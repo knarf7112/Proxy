@@ -60,6 +60,10 @@
       <Project>{2ae34b10-5d50-498b-917f-7107b49b654e}</Project>
       <Name>Crypto</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RandomGenerator\RandomGenerator.csproj">
+      <Project>{3afa7ac7-bc1f-4c92-a788-aa82ef1df4f2}</Project>
+      <Name>RandomGenerator</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

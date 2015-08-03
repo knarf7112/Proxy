@@ -37,9 +37,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IRanASelector.cs" />
+    <Compile Include="ISessionKeyGenerator.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="RandASelector.cs" />
+    <Compile Include="SessionKeyGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

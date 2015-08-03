@@ -8,7 +8,7 @@ namespace RandomGenerator
         {
             byte[] expected = new byte[] { 0x8E, 0xEB, 0x6A, 0x5E, 0x1E, 0xE9, 0xB3, 0x14, 
                                            0x71, 0xC2, 0xE9, 0x96, 0xC3, 0x92, 0xF9, 0x43 };
-            RandASelector rng = new RandASelector();
+            SessionKeyGenerator rng = new SessionKeyGenerator();
             byte[] specifiedBytes = rng.GetRanA(11);
 
             Console.WriteLine("start compare byte array ...");
