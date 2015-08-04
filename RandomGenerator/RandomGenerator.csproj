@@ -38,7 +38,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ISessionKeyGenerator.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="SessionKeyGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

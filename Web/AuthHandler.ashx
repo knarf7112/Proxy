@@ -1,29 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-//
+﻿<%@ WebHandler Language="C#" Class="AuthHandler" %>
+
+using System;
 using System.Web;
+//
 using Crypto.EskmsAPI;
 using System.IO;
 using Common.Logging;
 
-namespace Proxy
-{
-    /// <summary>
-    /// 3 Pass Authentication
-    /// </summary>
-    public class AuthenticateHandler : IHttpHandler
+    public class AuthHandler : IHttpHandler
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(AuthenticateHandler));
 
-        public bool IsReusable
-        {
-            get { return false; }
-        }
+        private static readonly ILog log = LogManager.GetLogger(typeof(AuthHandler));
 
         public void ProcessRequest(HttpContext context)
         {
+            
             string inputData = GetFromInputStream(context);
             if (!String.IsNullOrEmpty(inputData))
             {
@@ -40,11 +31,12 @@ namespace Proxy
             context.Response.ContentType = "text/plain";
             context.Response.Write("Test");
             context.Response.End();
+            
         }
 
         private static string GetFromInputStream(HttpContext context)
         {
-            StreamReader sr = new StreamReader(context.Request.InputStream,Encoding.ASCII);
+            StreamReader sr = new StreamReader(context.Request.InputStream, System.Text.Encoding.ASCII);
             string result = sr.ReadToEnd();
             return result;
         }
@@ -63,8 +55,8 @@ namespace Proxy
             };
             //run
             iBonAuth.StartAuthenticate(true);
-            byte[] result = new byte[iBonAuth.Output_RanB.Length + 
-                                     iBonAuth.Output_Enc_RanAandRanBRol8.Length + 
+            byte[] result = new byte[iBonAuth.Output_RanB.Length +
+                                     iBonAuth.Output_Enc_RanAandRanBRol8.Length +
                                      iBonAuth.Output_Enc_IVandRanARol8.Length + 4];
             byte[] randAStartIndexBytes = BitConverter.GetBytes(iBonAuth.Output_RandAStartIndex);//4 bytes
             Buffer.BlockCopy(iBonAuth.Output_RanB, 0, result, 0, iBonAuth.Output_RanB.Length);//Copy Random B in Result
@@ -77,5 +69,13 @@ namespace Proxy
             log.Debug("Random A Start Index:" + BitConverter.ToString(iBonAuth.Output_RanB));
             return result;
         }
+
+        public bool IsReusable
+        {
+            get
+            {
+                return false;
+            }
+        }
+
     }
-}

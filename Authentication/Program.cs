@@ -19,6 +19,10 @@ namespace Authentication
 
         public static void Main()
         {
+            int qq = 111;
+            byte[] n1 = BitConverter.GetBytes(qq);
+            int q2 =  BitConverter.ToInt32(n1, 0);
+            string q3 = BitConverter.ToString(n1);
             Test myTest = new Test() { value1 = "Value 1", value2 = "Value 2" };
             XmlSerializer x = new XmlSerializer(myTest.GetType());
             x.Serialize(Console.Out, myTest);

@@ -39,6 +39,15 @@
     <Reference Include="ALCommon">
       <HintPath>..\Libs\ALCommon.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Logging">
+      <HintPath>..\Libs\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Log4Net">
+      <HintPath>..\Libs\Common.Logging.Log4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\Libs\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
@@ -55,6 +64,20 @@
     <Compile Include="CheckTimeHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Crypto.EskmsAPI\Crypto.EskmsAPI.csproj">
+      <Project>{0ded6403-0a91-48d6-9d7f-54d40e0904ea}</Project>
+      <Name>Crypto.EskmsAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Crypto\Crypto.csproj">
+      <Project>{2ae34b10-5d50-498b-917f-7107b49b654e}</Project>
+      <Name>Crypto</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RandomGenerator\RandomGenerator.csproj">
+      <Project>{3afa7ac7-bc1f-4c92-a788-aa82ef1df4f2}</Project>
+      <Name>RandomGenerator</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
