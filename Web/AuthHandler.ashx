@@ -6,7 +6,7 @@ using System.Web;
 using Crypto.EskmsAPI;
 using System.IO;
 using Common.Logging;
-
+using System.Text;
     public class AuthHandler : IHttpHandler
     {
 
@@ -16,20 +16,24 @@ using Common.Logging;
         {
             
             string inputData = GetFromInputStream(context);
+            context.Response.ContentType = "text/plain";
+            context.Response.StatusCode = 200;
             if (!String.IsNullOrEmpty(inputData))
             {
                 log.Debug("Request Data:" + inputData);
                 byte[] responseData = DoAuthenticate(inputData);
-                context.Response.OutputStream.Position = 0;
+                //context.Response.OutputStream.Position = 0;
                 log.Debug("start Response Out ...");
-                context.Response.OutputStream.Write(responseData, 0, responseData.Length);
+                context.Response.OutputStream.Write(responseData, 0, responseData.Length);//return 68 bytes
                 log.Debug("End Response");
-                context.Response.OutputStream.Flush();
-                context.Response.OutputStream.Close();
             }
-            log.Debug("Test123");
-            context.Response.ContentType = "text/plain";
-            context.Response.Write("Test");
+            else
+            {
+                log.Debug("Test123");
+                context.Response.OutputStream.Write(Encoding.ASCII.GetBytes("Test123"), 0, 7);//.Write("Test");
+            }
+            context.Response.OutputStream.Flush();
+            context.Response.OutputStream.Close();
             context.Response.End();
             
         }
@@ -42,6 +46,8 @@ using Common.Logging;
         }
         private static byte[] DoAuthenticate(string inputData)
         {
+            if (inputData.Length != 50)
+                return new byte[5] { 0x48, 0x61, 0x20, 0x48, 0x61 };//ha ha
             string keyLabel = "2ICH3F0000" + inputData.Substring(0, 2) + "A";//1
             string KeyVersion = inputData.Substring(2, 2);//3
             string uid = inputData.Substring(4, 14);//17
@@ -66,7 +72,8 @@ using Common.Logging;
             log.Debug("RanB:" + BitConverter.ToString(iBonAuth.Output_RanB).Replace("-", ""));
             log.Debug("E(RanA || RanBRol8):" + BitConverter.ToString(iBonAuth.Output_Enc_RanAandRanBRol8).Replace("-", ""));
             log.Debug("E(iv,RanARol8):" + BitConverter.ToString(iBonAuth.Output_Enc_IVandRanARol8).Replace("-", ""));
-            log.Debug("Random A Start Index:" + BitConverter.ToString(iBonAuth.Output_RanB));
+            log.Debug("Random A Start Index:" + iBonAuth.Output_RandAStartIndex);
+            log.Debug("Session Key:" + BitConverter.ToString(iBonAuth.Output_SessionKey).Replace("-", ""));
             return result;
         }
 

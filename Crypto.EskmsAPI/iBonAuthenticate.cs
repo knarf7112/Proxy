@@ -118,7 +118,7 @@ namespace Crypto.EskmsAPI
             this.byteWorker = new ByteWorker();
             this.symCryptor = new SymCryptor();
             this.RandomACreater = new SessionKeyGenerator();
-            this.GenerateRanAIndex = new Random(new Guid().GetHashCode());
+            this.GenerateRanAIndex = new Random();
             this.esKmsWebApi = new EsKmsWebApi()
             {
                 Url = "http://127.0.0.1:8081/eGATEsKMS/interface",//"http://10.27.68.163:8080/eGATEsKMS/interface",
