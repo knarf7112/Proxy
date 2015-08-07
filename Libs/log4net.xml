@@ -7,10 +7,10 @@
   </appender>
   <appender name="RollingFileAppender" type="log4net.Appender.RollingFileAppender,log4net">
     <!--為了Debug，先把log存到文鴻的D:/temp/log.txt-->
-    <file value="D:\\temp\\log.txt" />
+    <file value="D:\\temp\\Log_iBonAuth.txt" />
     <appendToFile value="true" />
     <rollingStyle value="Size" />
-    <maxSizeRollBackups value="10" />
+    <maxSizeRollBackups value="1" />
     <maximumFileSize value="1024KB" />
     <staticLogFileName value="true" />
     <layout type="log4net.Layout.PatternLayout">
@@ -76,15 +76,15 @@
   <root>
     <level value="ALL"/>
     <!--把Log輸出到Console-->
-    <appender-ref ref="ConsoleAppender"/>
+    <!--<appender-ref ref="ConsoleAppender"/>-->
     <!--把Log輸出到檔案-->
     <appender-ref ref="RollingFileAppender"/>
-    <appender-ref ref="AdoNetAppender"/>
+    <!--<appender-ref ref="AdoNetAppender"/>-->
     <!--
         <appender-ref ref="EventLogAppender"/>
     -->
   </root>
-  <logger name="AssemblyName">
+  <logger name="AuthHandler">
     <level value="ALL"/>
   </logger>
 </log4net>

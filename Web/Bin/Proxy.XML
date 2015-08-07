@@ -9,6 +9,33 @@
             3 Pass Authentication
             </summary>
         </member>
+        <member name="M:Proxy.AuthenticateHandler.ProcessRequest(System.Web.HttpContext)">
+            <summary>
+            Request in
+            </summary>
+            <param name="context">Http請求</param>
+        </member>
+        <member name="M:Proxy.AuthenticateHandler.GetStringFromInputStream(System.Web.HttpContext)">
+            <summary>
+            get string from InputStream and Encoding default is ASCII
+            </summary>
+            <param name="context">request context</param>
+            <returns>request http body</returns>
+        </member>
+        <member name="M:Proxy.AuthenticateHandler.DoAuthenticate(System.String)">
+            <summary>
+            Run 3 Pass Authenticate Flow
+            </summary>
+            <param name="inputData">challenge Data and parameters</param>
+            <returns>RanB||E(RanA||RanBRol8)||E(iv,RanARol8)||RanAStartIndex</returns>
+        </member>
+        <member name="M:Proxy.AuthenticateHandler.DoAuthenticate(System.Byte[])">
+            <summary>
+            Run 3 Pass Authenticate Flow
+            </summary>
+            <param name="inputData">challenge Data and parameters</param>
+            <returns>RanB||E(RanA||RanBRol8)||E(iv,RanARol8)||RanAStartIndex</returns>
+        </member>
         <member name="T:Proxy.CardValidationHandler">
             <summary>
             檢核卡號有效性,連到AP的檢查服務6103

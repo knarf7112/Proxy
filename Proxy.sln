@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proxy", "Proxy\Proxy.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication", "Authentication\Authentication.csproj", "{52506E07-4D3B-418D-95C4-980A39E644AD}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web(3)", "http://localhost:1538", "{FAC008FF-1D88-48C0-B64E-04B7003765BD}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web(3)", "http://localhost:1539", "{FAC008FF-1D88-48C0-B64E-04B7003765BD}"
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"

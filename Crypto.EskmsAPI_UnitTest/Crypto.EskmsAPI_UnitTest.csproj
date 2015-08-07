@@ -64,6 +64,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AesCMac2Worker_UnitTest.cs" />
     <Compile Include="EsKmsApi_UnitTest.cs" />
     <Compile Include="EsKmsWebApi_UnitTest.cs" />
     <Compile Include="iBonAuthenticate_UnitTest.cs" />

@@ -35,6 +35,12 @@ namespace Crypto.EskmsAPI
         public string AppCode { private get; set; }
         public string AuthCode { private get; set; }
         public string AppName { private get; set; }
+        public string KeyNo { private get; set; }//Key => 32A
+        /// <summary>
+        /// 為了選擇第一段和第二段Request的中間部分字串(暫定)
+        /// "4226,\"Parameter\":\"00000000000000000000000000000000\" or "4225"
+        /// </summary>
+        public string CipherMode { private get; set; }//4225/ECB, 4226/CBC
         #endregion
         public EsKmsWebApi() 
         {
@@ -106,6 +112,7 @@ namespace Crypto.EskmsAPI
                 }
             }
             //
+            this.webHead = null;
             return result;
         }
 
@@ -213,15 +220,15 @@ namespace Crypto.EskmsAPI
               + "&AuthWithCipher=1&Action=client&Command=key.use.do"
             ;
             this.webContP1 = Encoding.ASCII.GetBytes(webContStrP1);
+            string cipherStr = (this.CipherMode == "CBC")? "4226,\"Parameter\":\"00000000000000000000000000000000\"":"4225";//CBC
             this.webContP2 = Encoding.ASCII.GetBytes
             (
                  "&JsonValue={\"WorkingKey\":{\"KeyLabel\":\"2ICH3F000010A\",\"KeyType\":0,\"KeySlot\":0,\"DiversifySeedKey\":0}"
-               + ",\"CipherMethod\":1,\"Mechanism\":{\"Mechanism\":4226,\"Parameter\":\"00000000000000000000000000000000\"}"
+               + ",\"CipherMethod\":1,\"Mechanism\":{\"Mechanism\":" + cipherStr + "}"
                + ",\"DataBlob\":{\"type\":0,\"value\":\""
                 //0104351D22162980494341534804351D95C50B2340739FC018230F202CEDED5C\"}}"
             );
             //int contSize = this.webContP1.Length + this.webContP2.Length;
-
             string webHeadStr =
                 this.HttpMethod + " " + this.requestUri + " HTTP/1.1\n"
               + "Host: " + this.host + ":" + this.port + "\n"

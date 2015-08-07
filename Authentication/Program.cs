@@ -6,6 +6,8 @@ using System.Text;
 //
 using System.Security.Cryptography;
 using System.Xml.Serialization;
+//
+using Crypto.EskmsAPI;
 
 namespace Authentication
 {
@@ -19,6 +21,8 @@ namespace Authentication
 
         public static void Main()
         {
+            iBonAuthenticate ibon = new iBonAuthenticate();
+
             int qq = 111;
             byte[] n1 = BitConverter.GetBytes(qq);
             int q2 =  BitConverter.ToInt32(n1, 0);

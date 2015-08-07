@@ -5,13 +5,17 @@ using System.Text;
 
 namespace Crypto.EskmsAPI
 {
+    /// <summary>
+    /// The CMAC Mode for Authentication
+    /// http://csrc.nist.gov/publications/nistpubs/800-38B/SP_800-38B.pdf
+    /// </summary>
     public interface ICMac2Worker
     {
         /// <summary>
         /// Set IV for MAC
         /// </summary>
         /// <param name="iv">initialization vector</param>
-        void SetIV(byte[] iv);
+        void SetIv(byte[] iv);
 
         /// <summary>
         /// CMAC Loading
@@ -35,7 +39,7 @@ namespace Crypto.EskmsAPI
         /// Get bytes by MacLength start from MSB
         /// </summary>
         /// <returns>MAC</returns>
-        byte[] GetMAC();
+        byte[] GetMac();
 
         /// <summary>
         /// Every odd bytes (start from 0, {1,3,5,7,9,11,13,15}) from 16 bytes standard CMAC

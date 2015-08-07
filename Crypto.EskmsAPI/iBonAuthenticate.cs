@@ -7,6 +7,7 @@ using Crypto.CommonUtility;
 using System.Threading.Tasks;
 using RandomGenerator;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace Crypto.EskmsAPI
 {
@@ -18,6 +19,8 @@ namespace Crypto.EskmsAPI
         private IByteWorker byteWorker;
 
         private IEsKmsWebApi esKmsWebApi;
+
+        private AesCMac2Worker aesCMac2Worker;
 
         private ISymCryptor symCryptor;
 
@@ -42,6 +45,11 @@ namespace Crypto.EskmsAPI
         private byte[] iv = null;//initial vector
         private byte[] Kx = null;//divers Key(16 bytes)
         private byte[] RanA = null;
+
+        /// <summary>
+        /// 登入KMS的帳號密碼設定檔
+        /// </summary>
+        private static IDictionary<string, string> dicKmsLoginConfig;
         #endregion
 
         #region Property
@@ -118,14 +126,24 @@ namespace Crypto.EskmsAPI
             this.byteWorker = new ByteWorker();
             this.symCryptor = new SymCryptor();
             this.RandomACreater = new SessionKeyGenerator();
-            this.GenerateRanAIndex = new Random();
+            this.GenerateRanAIndex = new Random(Guid.NewGuid().GetHashCode());
+            if (dicKmsLoginConfig == null)
+            {
+                LoadXmlConfig(@"EsKmsWebApiConfig.xml");
+            }
             this.esKmsWebApi = new EsKmsWebApi()
             {
-                Url = "http://127.0.0.1:8081/eGATEsKMS/interface",//"http://10.27.68.163:8080/eGATEsKMS/interface",
-                AppCode = "APP_001",
-                AuthCode = "12345678",
-                AppName = "icash2Test",
-                HttpMethod = "POST",
+                Url = dicKmsLoginConfig["Url"],
+                //"http://10.27.68.163:8080/eGATEsKMS/interface",
+                //"http://127.0.0.1:8081/eGATEsKMS/interface",
+                AppCode = dicKmsLoginConfig["AppCode"],
+                //"APP_001",
+                AuthCode = dicKmsLoginConfig["AuthCode"],
+                //"12345678",
+                AppName = dicKmsLoginConfig["AppName"],
+                //"icash2Test",
+                HttpMethod = dicKmsLoginConfig["HttpMethod"],
+                //"POST",
                 HexConverter = new HexConverter(),
                 HashWorker = new HashWorker()
                 {
@@ -133,8 +151,28 @@ namespace Crypto.EskmsAPI
                     HexConverter = new HexConverter()
                 }
             };
+
+            this.aesCMac2Worker = new AesCMac2Worker(this.esKmsWebApi);
         }
         #endregion
+
+        private void LoadXmlConfig(string fileName)
+        {
+            iBonAuthenticate.dicKmsLoginConfig = new Dictionary<string, string>();
+            string fileFullPath = AppDomain.CurrentDomain.BaseDirectory + @"Config\" + fileName;
+            XDocument doc = XDocument.Load(fileFullPath);
+            XElement root = doc.Root;
+            string url = root.Element("Url").Value;
+            string appCode = root.Element("AppCode").Value;
+            string authCode = root.Element("AuthCode").Value;
+            string appName = root.Element("AppName").Value;
+            string httpMethod = root.Element("HttpMethod").Value;
+            dicKmsLoginConfig.Add("Url", url);
+            dicKmsLoginConfig.Add("AppCode", appCode);
+            dicKmsLoginConfig.Add("AuthCode", authCode);
+            dicKmsLoginConfig.Add("AppName", appName);
+            dicKmsLoginConfig.Add("HttpMethod", httpMethod);
+        }
 
         /// <summary>
         /// Run (3 Pass) Authenticate Flow
@@ -171,7 +209,11 @@ namespace Crypto.EskmsAPI
                                               "\n UID:" + uid + 
                                               "\n iv:" + BitConverter.ToString(iv).Replace("-", "") +
                                               "\n BlobValue:" + BitConverter.ToString(requestBlobValue).Replace("-", ""));
-            byte[] responseData = this.esKmsWebApi.Encrypt(keyLabel, iv, requestBlobValue);//get diverse key
+            //byte[] responseData = this.esKmsWebApi.Encrypt(keyLabel, iv, requestBlobValue);//get diverse key//(錯誤的)舊的直接傳,01+uid+ICASH+uid+ICASH+uid
+            this.aesCMac2Worker.SetIv(AesCMac2Worker.ConstZero);
+            this.aesCMac2Worker.DataInput(requestBlobValue);
+            this.aesCMac2Worker.SetMacKey(keyLabel);
+            byte[] responseData = this.aesCMac2Worker.GetMac();
             this.Kx = this.byteWorker.SubArray(responseData, responseData.Length - this.macLength, this.macLength);// get mac from diverse key
             Debug.WriteLine("DivKey:" + BitConverter.ToString(this.Kx).Replace("-", ""));
         }

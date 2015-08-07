@@ -26,7 +26,7 @@ namespace Crypto.EskmsAPI_UnitTest
             //input data
             this.iBonAuth.Input_KeyLabel = "2ICH3F000032A";
             this.iBonAuth.Input_KeyVersion = "0";
-            this.iBonAuth.Input_BlobValue = this.hexConverter.Hex2Bytes("0104873ABA8D2C80494341534804873A9B330A45CCB51DDE66FDD7EABD400895");
+            this.iBonAuth.Input_BlobValue = this.hexConverter.Hex2Bytes("0104214C82583B80494341534804214C82583B80494341534804214C82583B80");//"0104873ABA8D2C80494341534804873A9B330A45CCB51DDE66FDD7EABD400895");//
             this.iBonAuth.Input_Enc_RanB = "4EF61041ABE8B0EF8B32A627B19D83AA";//加密的RanB
             this.iBonAuth.Input_RanA = new byte[] { 0x7A,0x0F,0x1F,0xBC,0xD5,0xFD,0xEA,0x04,
                                                     0x8C,0x9B,0xD7,0x90,0x05,0x0E,0x78,0xA0 };//固定RanA值
@@ -38,7 +38,7 @@ namespace Crypto.EskmsAPI_UnitTest
         {
             string expectedRanBStr = "65ADC0C88F7BFB97430D6F84274FC376";//預期解密的RanB字串
             byte[] expectedRanB = this.hexConverter.Hex2Bytes(expectedRanBStr);//預期的RanB
-            string expectedDivKey = "17AB67F130169FB3C012B2DD17985365";//Kx(從KMS取得的DivKey)
+            string expectedDivKey = "EE0E90B75F83D7F2C52D3C5F4CAF20D3";//"17AB67F130169FB3C012B2DD17985365";//Kx(從KMS取得的DivKey)
             string expectedEnc_RanAandRanBRol8Str = "B6EE87D2F942E2CB70EF6605CBA463EAF605E369EB6036600C2E6F2D528E475B";//預期的Enc(iv, RanA || RanBRol8)
             byte[] expectedEnc_RanAandRanBRol8 = this.hexConverter.Hex2Bytes(expectedEnc_RanAandRanBRol8Str);
 
@@ -47,7 +47,7 @@ namespace Crypto.EskmsAPI_UnitTest
 
             string expectedSessionKeyStr = "7A0F1FBC65ADC0C8050E78A0274FC376";//預期的SessionKey
             byte[] expectedSessionKey = this.hexConverter.Hex2Bytes(expectedSessionKeyStr);
-            Trace.WriteLine("預期DivKey:" + expectedDivKey);
+            Debug.WriteLine("預期DivKey:" + expectedDivKey);//EE0E90B75F83D7F2C52D3C5F4CAF20D3
             //************************************************************
             //開始執行認證
             this.iBonAuth.StartAuthenticate(true);

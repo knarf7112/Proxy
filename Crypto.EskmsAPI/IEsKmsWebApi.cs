@@ -7,6 +7,7 @@ namespace Crypto.EskmsAPI
     /// </summary>
     public interface IEsKmsWebApi
     {
+        string CipherMode { set; }
         /// <summary>
         /// Encrypt by key with the specific keylabel
         /// </summary>
