@@ -24,14 +24,21 @@
         </member>
         <member name="M:Proxy.AuthenticateHandler.DoAuthenticate(System.String)">
             <summary>
-            Run 3 Pass Authenticate Flow
+            Run 3 Pass Authenticate Flow by ASCII string(length:50)
             </summary>
             <param name="inputData">challenge Data and parameters</param>
             <returns>RanB||E(RanA||RanBRol8)||E(iv,RanARol8)||RanAStartIndex</returns>
         </member>
+        <member name="M:Proxy.AuthenticateHandler.StringToByteArray(System.String)">
+            <summary>
+            hex string to byte array
+            </summary>
+            <param name="hex">hex data</param>
+            <returns></returns>
+        </member>
         <member name="M:Proxy.AuthenticateHandler.DoAuthenticate(System.Byte[])">
             <summary>
-            Run 3 Pass Authenticate Flow
+            Run 3 Pass Authenticate Flow by Byte Array(length:25)
             </summary>
             <param name="inputData">challenge Data and parameters</param>
             <returns>RanB||E(RanA||RanBRol8)||E(iv,RanARol8)||RanAStartIndex</returns>
