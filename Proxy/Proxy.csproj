@@ -56,12 +56,15 @@
       <HintPath>..\Libs\SocketClient.Domain.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthenticateHandler.cs" />
+    <Compile Include="AutoLoadHandler.cs" />
     <Compile Include="CardValidationHandler.cs" />
     <Compile Include="CheckTimeHandler.cs" />
+    <Compile Include="POCO\ServiceConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

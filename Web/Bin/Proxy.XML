@@ -43,6 +43,69 @@
             <param name="inputData">challenge Data and parameters</param>
             <returns>RanB||E(RanA||RanBRol8)||E(iv,RanARol8)||RanAStartIndex</returns>
         </member>
+        <member name="T:Proxy.AutoLoadHandler">
+            <summary>
+            自動加值Handler
+            </summary>
+        </member>
+        <member name="M:Proxy.AutoLoadHandler.ProcessRequest(System.Web.HttpContext)">
+            <summary>
+            Request in
+            </summary>
+            <param name="context">HttpContext</param>
+        </member>
+        <member name="M:Proxy.AutoLoadHandler.SendAndReceiveFromAP(ALCommon.AL2POS_Domain)">
+            <summary>
+            Send Reuqest POCO to Center AP and receive response POCO
+            </summary>
+            <param name="request">自動加值請求物件</param>
+            <returns>自動加值回應物件</returns>
+        </member>
+        <member name="M:Proxy.AutoLoadHandler.InitialIpConfig">
+            <summary>
+            檢查Web.config的AppSettings內是否有設定後端服務的IP,Port,送出和接收逾時
+            並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
+            </summary>
+        </member>
+        <member name="M:Proxy.AutoLoadHandler.ParseRequestString(System.String)">
+            <summary>
+            自動加值請求電文字串轉自動加值請求物件(要傳給後端AP用的)
+            </summary>
+            <param name="request">自動加值請求電文字串(ASCII)</param>
+            <returns>自動加值請求物件</returns>
+        </member>
+        <member name="M:Proxy.AutoLoadHandler.ParseResponseString(ALCommon.AL2POS_Domain,ALCommon.AL2POS_Domain,System.String,System.String@)">
+            <summary>
+            比對並轉換Request和Response物件,請求和回應是同一組則out電文字串,不同out null
+            </summary>
+            <param name="request">RequestPOCO</param>
+            <param name="response">ResponsePOCO</param>
+            <param name="requestString">RequestString</param>
+            <param name="responseString"></param>
+            <returns>成功out出response字串/失敗out null</returns>
+        </member>
+        <member name="M:Proxy.AutoLoadHandler.GetStringFromInputStream(System.Web.HttpContext,System.Text.Encoding)">
+            <summary>
+            Get request string from HttpContext Input Stream
+            </summary>
+            <param name="context">current HttpContext</param>
+            <param name="encoding">要使用的編碼方式</param>
+            <returns>電文字串(已編碼)</returns>
+        </member>
+        <member name="M:Proxy.AutoLoadHandler.StringToByteArray(System.String)">
+            <summary>
+            hex string to byte array
+            </summary>
+            <param name="hex">hex data</param>
+            <returns></returns>
+        </member>
+        <member name="M:Proxy.AutoLoadHandler.GetBytesFromInputStream(System.Web.HttpContext)">
+            <summary>
+            Get request byte array from HttpContext Input Stream
+            </summary>
+            <param name="context">current HttpContext</param>
+            <returns>電文陣列(未編碼)</returns>
+        </member>
         <member name="T:Proxy.CardValidationHandler">
             <summary>
             檢核卡號有效性,連到AP的檢查服務6103
