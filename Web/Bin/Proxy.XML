@@ -48,11 +48,49 @@
             自動加值Handler
             </summary>
         </member>
+        <member name="F:Proxy.AutoLoadHandler.dicApConfig">
+            <summary>
+            連向後台AP的設定資料(IP,Port,SendTimeout,ReceiveTimeout)
+            Key:設定檔的appSettings裡的Name
+            </summary>
+        </member>
+        <member name="F:Proxy.AutoLoadHandler.APServiceName">
+            <summary>
+            要從web config檔內讀取的資料名稱
+            </summary>
+        </member>
+        <member name="F:Proxy.AutoLoadHandler.lockObj">
+            <summary>
+            used to lock dicApConfig
+            </summary>
+        </member>
+        <member name="F:Proxy.AutoLoadHandler.Request_Com_Type">
+            <summary>
+            此服務的請求電文通訊種別(4 bytes)
+            </summary>
+        </member>
+        <member name="F:Proxy.AutoLoadHandler.Response_Com_Type">
+            <summary>
+            此服務的回應電文通訊種別(4 bytes)
+            </summary>
+        </member>
+        <member name="F:Proxy.AutoLoadHandler.Response_Generic_Error_ReturnCode">
+            <summary>
+            通用後台AP錯誤Return Code(6 bytes)
+            </summary>
+        </member>
         <member name="M:Proxy.AutoLoadHandler.ProcessRequest(System.Web.HttpContext)">
             <summary>
             Request in
             </summary>
             <param name="context">HttpContext</param>
+        </member>
+        <member name="M:Proxy.AutoLoadHandler.GetResponseFailString(System.String)">
+            <summary>
+            自動加值後端異常回應通用格式
+            </summary>
+            <param name="inputData">Reqeust 電文</param>
+            <returns>異常回應通用格式</returns>
         </member>
         <member name="M:Proxy.AutoLoadHandler.SendAndReceiveFromAP(ALCommon.AL2POS_Domain)">
             <summary>
@@ -120,6 +158,24 @@
             <param name="ip"></param>
             <param name="port"></param>
             <returns>Return Code(若傳輸異常回傳null)</returns>
+        </member>
+        <member name="T:Proxy.SingletonObj">
+            <summary>
+            存放設定檔用的靜態物件(測試階段)
+            </summary>
+        </member>
+        <member name="M:Proxy.SingletonObj.GetConfigInstance(System.String)">
+            <summary>
+            取得後台AP服務的連線資訊物件
+            </summary>
+            <param name="ServiceConfigName">後台AP服務名稱</param>
+            <returns>後台AP服務連線資訊</returns>
+        </member>
+        <member name="M:Proxy.SingletonObj.InitialIpConfig">
+            <summary>
+            檢查Web.config的AppSettings內是否有設定後端服務的IP,Port,送出和接收逾時
+            並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
+            </summary>
         </member>
     </members>
 </doc>
