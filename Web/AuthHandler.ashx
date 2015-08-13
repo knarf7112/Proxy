@@ -35,8 +35,8 @@ using System.Text;
             }
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
-            context.Response.End();
-            
+            //context.Response.End();
+            context.ApplicationInstance.CompleteRequest();
         }
 
         private static string GetStringFromInputStream(HttpContext context)

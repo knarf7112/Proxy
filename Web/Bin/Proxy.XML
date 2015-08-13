@@ -159,23 +159,146 @@
             <param name="port"></param>
             <returns>Return Code(若傳輸異常回傳null)</returns>
         </member>
-        <member name="T:Proxy.SingletonObj">
+        <member name="T:Proxy.StaticObj">
             <summary>
             存放設定檔用的靜態物件(測試階段)
             </summary>
         </member>
-        <member name="M:Proxy.SingletonObj.GetConfigInstance(System.String)">
+        <member name="M:Proxy.StaticObj.GetConfigInstance(System.String)">
             <summary>
             取得後台AP服務的連線資訊物件
             </summary>
             <param name="ServiceConfigName">後台AP服務名稱</param>
             <returns>後台AP服務連線資訊</returns>
         </member>
-        <member name="M:Proxy.SingletonObj.InitialIpConfig">
+        <member name="M:Proxy.StaticObj.InitialIpConfig">
             <summary>
             檢查Web.config的AppSettings內是否有設定後端服務的IP,Port,送出和接收逾時
             並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
             </summary>
+        </member>
+        <member name="T:Proxy.TxLogHandler">
+            <summary>
+            TxLog Handler
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogHandler.dicApConfig">
+            <summary>
+            連向後台AP的設定資料(IP,Port,SendTimeout,ReceiveTimeout)
+            Key:設定檔的appSettings裡的Name
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogHandler.TxLogServiceName">
+            <summary>
+            要從web config檔內讀取的資料名稱(TxLog寫入成功時使用的連線設定)
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogHandler.ReversalTxLogServiceName">
+            <summary>
+            要從web config檔內讀取的資料名稱(TxLog寫入失敗時[沖正]使用的連線設定)
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogHandler.lockObj">
+            <summary>
+            used to lock dicApConfig
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogHandler.TxlogLength">
+            <summary>
+            規格指定的電文長度
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogHandler.Request_Com_Type">
+            <summary>
+            此服務的請求電文通訊種別(4 bytes)
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogHandler.Response_Com_Type">
+            <summary>
+            此服務的回應電文通訊種別(4 bytes)
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogHandler.Response_Generic_Error_ReturnCode">
+            <summary>
+            通用後台AP錯誤Return Code(6 bytes)
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogHandler.TxLogInnerReturnCode_OK">
+            <summary>
+            正常交易的Return Code(用來比對TxLog內卡機回傳的Return Code)
+            </summary>
+        </member>
+        <member name="M:Proxy.TxLogHandler.ProcessRequest(System.Web.HttpContext)">
+            <summary>
+            request in
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:Proxy.TxLogHandler.HasReversal(ALCommon.ALTxlog_Domain)">
+            <summary>
+            檢查TxLog是否需要沖正
+            </summary>
+            <param name="request">TxLog物件</param>
+            <returns>要沖正/不沖正</returns>
+        </member>
+        <member name="M:Proxy.TxLogHandler.ParseRequestString(System.String)">
+            <summary>
+            自動加值Txlog請求電文字串轉自動加值Txlog請求物件(要傳給後端AP用的)
+            </summary>
+            <param name="request">自動加值Txlog請求電文字串(ASCII)</param>
+            <returns>自動加值Txlog請求物件</returns>
+        </member>
+        <member name="M:Proxy.TxLogHandler.ParseResponseString(ALCommon.ALTxlog_Domain,ALCommon.ALTxlog_Domain,System.String,System.String@)">
+            <summary>
+            比對並轉換Request和Response物件,請求和回應是同一組則out電文字串,不同out null
+            </summary>
+            <param name="request">RequestPOCO</param>
+            <param name="response">ResponsePOCO</param>
+            <param name="requestString">RequestString</param>
+            <param name="responseString"></param>
+            <returns>成功out出response字串/失敗out null</returns>
+        </member>
+        <member name="M:Proxy.TxLogHandler.GetResponseFailString(System.String)">
+            <summary>
+            Txlog後端異常回應通用格式
+            </summary>
+            <param name="inputData">Reqeust 電文</param>
+            <returns>異常回應通用格式</returns>
+        </member>
+        <member name="M:Proxy.TxLogHandler.SendAndReceiveFromAP(ALCommon.ALTxlog_Domain,System.String)">
+            <summary>
+            Send Reuqest POCO to Center AP and receive response POCO
+            </summary>
+            <param name="request">自動加值請求物件</param>
+            <returns>自動加值回應物件</returns>
+        </member>
+        <member name="M:Proxy.TxLogHandler.InitialIpConfig">
+            <summary>
+            檢查Web.config的AppSettings內是否有設定後端服務的IP,Port,送出和接收逾時
+            並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
+            </summary>
+        </member>
+        <member name="M:Proxy.TxLogHandler.GetStringFromInputStream(System.Web.HttpContext,System.Text.Encoding)">
+            <summary>
+            Get request string from HttpContext Input Stream
+            </summary>
+            <param name="context">current HttpContext</param>
+            <param name="encoding">要使用的編碼方式</param>
+            <returns>電文字串(已編碼)</returns>
+        </member>
+        <member name="M:Proxy.TxLogHandler.StringToByteArray(System.String)">
+            <summary>
+            hex string to byte array
+            </summary>
+            <param name="hex">hex data</param>
+            <returns></returns>
+        </member>
+        <member name="M:Proxy.TxLogHandler.GetBytesFromInputStream(System.Web.HttpContext)">
+            <summary>
+            Get request byte array from HttpContext Input Stream
+            </summary>
+            <param name="context">current HttpContext</param>
+            <returns>電文陣列(未編碼)</returns>
         </member>
     </members>
 </doc>

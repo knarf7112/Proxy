@@ -16,11 +16,6 @@ using System.Diagnostics;
 public class TxLogHandler : IHttpHandler {
 
     private static readonly ILog log = LogManager.GetLogger(typeof(TxLogHandler));
-
-    /// <summary>
-    /// 規格指定的電文長度
-    /// </summary>
-    private static readonly int TxlogLength = 397;
     
     /// <summary>
     /// 連向後台AP的設定資料(IP,Port,SendTimeout,ReceiveTimeout)
@@ -28,13 +23,21 @@ public class TxLogHandler : IHttpHandler {
     /// </summary>
     private static IDictionary<string, ServiceConfig> dicApConfig;
     /// <summary>
-    /// 要從web config檔內讀取的資料名稱
+    /// 要從web config檔內讀取的資料名稱(TxLog寫入成功時使用的連線設定)
     /// </summary>
-    private static readonly string APServiceName = "TxlogAPService";
+    private static readonly string TxLogServiceName = "TxLogService";
+    /// <summary>
+    /// 要從web config檔內讀取的資料名稱(TxLog寫入失敗時[沖正]使用的連線設定)
+    /// </summary>
+    private static readonly string ReversalTxLogServiceName = "ReversalTxLogService";
     /// <summary>
     /// used to lock dicApConfig
     /// </summary>
     private static object lockObj = new object();
+    /// <summary>
+    /// 規格指定的電文長度
+    /// </summary>
+    private static readonly int TxlogLength = 397;
     /// <summary>
     /// 此服務的請求電文通訊種別(4 bytes)
     /// </summary>
@@ -47,7 +50,15 @@ public class TxLogHandler : IHttpHandler {
     /// 通用後台AP錯誤Return Code(6 bytes)
     /// </summary>
     private static readonly string Response_Generic_Error_ReturnCode = "990001";
+    /// <summary>
+    /// 正常交易的Return Code(用來比對TxLog內卡機回傳的Return Code)
+    /// </summary>
+    private static readonly string TxLogInnerReturnCode_OK = "00000000";
     
+    /// <summary>
+    /// request in
+    /// </summary>
+    /// <param name="context"></param>
     public void ProcessRequest (HttpContext context) 
     {
         string responseString = null;
@@ -69,15 +80,24 @@ public class TxLogHandler : IHttpHandler {
         context.Response.StatusCode = 200;
         if (request != null)
         {
-            // 3. Connect Center AP and Send Request POCO then get response POCO
-            response = SendAndReceiveFromAP(request);
-            // 4. 若後端AP回應或轉換比對Request和Response有問題時
+            // 3. check TxLog Return Code
+            if (HasReversal(request))
+            {
+                // 4. Connect TxLog Service and Send TxLog POCO then Response TxLog POCO
+                response = SendAndReceiveFromAP(request, ReversalTxLogServiceName);
+            }
+            else
+            {
+                // 4. Connect Reversal TxLog Service and Send TxLog POCO then Response TxLog POCO
+                response = SendAndReceiveFromAP(request, TxLogServiceName);
+            }
+            // 5. 若後端AP回應或轉換比對Request和Response有問題時
             if (response == null || !ParseResponseString(request, response, inputData, out responseString))
             {
                 //後端無回應(後端異常)
                 responseString = GetResponseFailString(inputData);
             }
-            // 5. Response Data
+            // 6. Response Data
             log.Debug("[Txlog Response] Data(length:" + responseString.Length + "):" + responseString);
             responseBytes = Encoding.ASCII.GetBytes(responseString);
             context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return 
@@ -92,9 +112,33 @@ public class TxLogHandler : IHttpHandler {
         context.Response.OutputStream.Flush();
         context.Response.OutputStream.Close();
         log.Debug("[Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "ms)");
-        context.Response.End();
+        context.ApplicationInstance.CompleteRequest();
     }
 
+    /// <summary>
+    /// 檢查TxLog是否需要沖正
+    /// </summary>
+    /// <param name="request">TxLog物件</param>
+    /// <returns>要沖正/不沖正</returns>
+    private bool HasReversal(ALTxlog_Domain request)
+    {
+        //依據文件 iCash2@iBon_Format_20150810.xlsx
+        string returnCode = request.TXLOG.Substring(16, 8);//直接取TxLog(length:288)內的ReturnCode欄位資料
+        string trans_Type = request.TXLOG.Substring(0, 2); //"74" or "75"
+        log.Debug(m => { m.Invoke("卡機回傳的ReturnCode:" + returnCode + " 交易類型:" + trans_Type); });
+        //自動加值交易是否OK
+        if (TxLogInnerReturnCode_OK == returnCode)
+        {
+            //不沖正
+            return false;
+        }
+        else
+        {
+            //要沖正
+            return true;
+        }
+    }
+    
     /// <summary>
     /// 自動加值Txlog請求電文字串轉自動加值Txlog請求物件(要傳給後端AP用的)
     /// </summary>
@@ -184,7 +228,7 @@ public class TxLogHandler : IHttpHandler {
     /// </summary>
     /// <param name="request">自動加值請求物件</param>
     /// <returns>自動加值回應物件</returns>
-    private ALTxlog_Domain SendAndReceiveFromAP(ALTxlog_Domain request)
+    private ALTxlog_Domain SendAndReceiveFromAP(ALTxlog_Domain request,string serviceName)
     {
         ALTxlog_Domain response = null;
         string requestStr = null;
@@ -205,9 +249,9 @@ public class TxLogHandler : IHttpHandler {
                 }
             }
         }
-        else if (!dicApConfig.ContainsKey(APServiceName))
+        else if (!dicApConfig.ContainsKey(serviceName))
         {
-            log.Error("WebConfig的appSettings[" + APServiceName + "] 設定資料不存在");
+            log.Error("WebConfig的appSettings[" + serviceName + "] 設定資料不存在");
             return null;
         }
         //*********************************
@@ -218,9 +262,9 @@ public class TxLogHandler : IHttpHandler {
         requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
         try
         {
-            using (SocketClient.Domain.SocketClient connectToAP = new SocketClient.Domain.SocketClient(dicApConfig[APServiceName].IP, dicApConfig[APServiceName].Port, dicApConfig[APServiceName].SendTimeout, dicApConfig[APServiceName].ReceiveTimeout))
+            using (SocketClient.Domain.SocketClient connectToAP = new SocketClient.Domain.SocketClient(dicApConfig[serviceName].IP, dicApConfig[serviceName].Port, dicApConfig[serviceName].SendTimeout, dicApConfig[serviceName].ReceiveTimeout))
             {
-                log.Debug("開始連線後端AP");
+                log.Debug("開始連線後端AP:" + serviceName);
                 if (connectToAP.ConnectToServer())
                 {
                     responseBytes = connectToAP.SendAndReceive(requestBytes);

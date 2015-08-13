@@ -28,7 +28,7 @@ namespace Proxy
         /// <summary>
         /// 要從web config檔內讀取的資料名稱
         /// </summary>
-        private static readonly string APServiceName = "AutoLoadAPService";
+        private static readonly string APServiceName = "AutoLoadService";
         /// <summary>
         /// used to lock dicApConfig
         /// </summary>
@@ -92,7 +92,8 @@ namespace Proxy
             timer.Start();
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
-            context.Response.End();
+            //context.Response.End();
+            context.ApplicationInstance.CompleteRequest();
             log.Debug("[AutoLoad]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "ms)");
         }
 

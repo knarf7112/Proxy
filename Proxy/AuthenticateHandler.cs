@@ -72,7 +72,8 @@ namespace Proxy
 
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
-            context.Response.End();
+            //context.Response.End();
+            context.ApplicationInstance.CompleteRequest();
             log.Debug("End Response");
         }
 

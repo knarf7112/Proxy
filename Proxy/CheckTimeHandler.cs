@@ -48,6 +48,7 @@ namespace Proxy
                 sw.Write(responseArr, 0, responseArr.Length);
                 sw.Flush();
             }
+            context.ApplicationInstance.CompleteRequest();
         }
     }
 }

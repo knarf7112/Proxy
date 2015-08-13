@@ -26,7 +26,7 @@ public class AutoLoadHandler : IHttpHandler {
     /// <summary>
     /// 要從web config檔內讀取的資料名稱
     /// </summary>
-    private static readonly string APServiceName = "AutoLoadAPService";
+    private static readonly string APServiceName = "AutoLoadService";
     /// <summary>
     /// used to lock dicApConfig
     /// </summary>
@@ -88,10 +88,11 @@ public class AutoLoadHandler : IHttpHandler {
             context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);//.Write("Test");            
         }
         timer.Start();
+        log.Debug("[AutoLoad]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "ms)");
         context.Response.OutputStream.Flush();
         context.Response.OutputStream.Close();
-        context.Response.End();
-        log.Debug("[AutoLoad]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "ms)");
+        //context.Response.End();//此段會造成以下的Statement不執行
+        context.ApplicationInstance.CompleteRequest();
     }
 
     /// <summary>

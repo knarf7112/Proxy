@@ -13,15 +13,15 @@ namespace Proxy
     /// <summary>
     /// 存放設定檔用的靜態物件(測試階段)
     /// </summary>
-    public static class SingletonObj
+    public static class StaticObj
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(SingletonObj));
+        private static readonly ILog log = LogManager.GetLogger(typeof(StaticObj));
 
         private static IDictionary<string, ServiceConfig> dicAPConfig;
 
         private static object lockObj = new object();
 
-        static SingletonObj()
+        static StaticObj()
         {
             log.Debug((m) => { m.Invoke("執行SingletonObj靜態初始化"); });
             InitialIpConfig();
