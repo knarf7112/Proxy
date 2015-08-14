@@ -238,7 +238,7 @@ namespace Proxy
                     READER_ID = request.Substring(50, 16),              //50~65   //8600000000000000:Terminal ID
                     ICC_NO = request.Substring(72, 16),                 //72~87   //5817000012345678:卡號
                     AL_AMT = Convert.ToInt32(request.Substring(96, 8)), //96~103  //00000500:交易金額
-                    AL2POS_SN = request.Substring(104, 8),              //104~111 //00000000:交易序號
+                    AL2POS_SN = request.Substring(120, 8),              //120~127 //00000000:交易序號
                     //RRN屬性還未設定 2015-08-10
                 };
             }

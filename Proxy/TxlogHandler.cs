@@ -115,7 +115,7 @@ namespace Proxy
             timer.Start();
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
-            log.Debug("[Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "ms)");
+            log.Debug("[Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
             context.ApplicationInstance.CompleteRequest();
         }
 
