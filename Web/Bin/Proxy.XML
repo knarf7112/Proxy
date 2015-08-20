@@ -74,6 +74,11 @@
             此服務的回應電文通訊種別(4 bytes)
             </summary>
         </member>
+        <member name="F:Proxy.AutoLoadHandler.AutoLoadLength">
+            <summary>
+            自動加值電文長度
+            </summary>
+        </member>
         <member name="F:Proxy.AutoLoadHandler.Response_Generic_Error_ReturnCode">
             <summary>
             通用後台AP錯誤Return Code(6 bytes)

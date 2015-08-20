@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WebHttpClient</name>
+    </assembly>
+    <members>
+        <member name="T:WebHttpClient.Client">
+            <summary>
+            使用WebRequest
+            </summary>
+        </member>
+        <member name="M:WebHttpClient.Client.GetResponse(System.String,System.String,System.Byte[],System.Boolean,System.Net.ICredentials,System.Int32,System.String)">
+            <summary>
+            設定Uri,與資料並送出Request後等待Response
+            </summary>
+            <param name="uriString">目的地Uri</param>
+            <param name="method">Get/Post</param>
+            <param name="sendData">null(Get)/bytes(Post)</param>
+            <param name="debugDisplay"></param>
+            <param name="credential">認證用(default:null)</param>
+            <param name="timeOut">要求逾時</param>
+            <param name="proxyString"></param>
+            <returns>回應資料(Byte Array)</returns>
+        </member>
+        <member name="M:WebHttpClient.Client.CreateWebRequest(System.String,System.Int32,System.Net.ICredentials,System.String)">
+            <summary>
+            Create WebRequest by UriString and set timeout(ms), credential, proxy
+            </summary>
+            <param name="uriString">destination Uri</param>
+            <param name="timeOut">逾時(ms)</param>
+            <param name="credential">Web認證(如果有)</param>
+            <param name="proxyString">代理(如果有)</param>
+            <returns>WebRequest Object</returns>
+        </member>
+        <member name="M:WebHttpClient.Client.SetReuqestData(System.Net.WebRequest,System.String,System.Byte[])">
+            <summary>
+            Setting WebRequest Medthod, ContentType, ContentLength, UserAgent, 
+            </summary>
+            <param name="request"></param>
+            <param name="method"></param>
+            <param name="sendData"></param>
+        </member>
+        <member name="M:WebHttpClient.Client.ReflectionAllPropertyValue(System.Object)">
+            <summary>
+            用來看進入物件的所有有數據的屬性名稱與值
+            </summary>
+            <param name="obj">Reflected object</param>
+        </member>
+    </members>
+</doc>

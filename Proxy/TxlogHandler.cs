@@ -172,7 +172,7 @@ namespace Proxy
                     MERC_FLG = request.Substring(4, 3),                 //4~6     //SET:通路別
                     STORE_NO = request.Substring(7, 8),                 //7~14    //01234567:店號
                     REG_ID = request.Substring(15, 3),                  //15~17   //000:POS機編號
-                    POS_SEQNO = request.Substring(18, 8),               //18~25   //Pos交易序號
+                    POS_SEQNO = request.Substring(18, 8).Substring(2,6),//18~25   //Pos交易序號
                     TXLOG_RC = request.Substring(44, 6),                //44~49   //中心端回應碼
                     READER_ID = request.Substring(50, 16),              //50~55   //Terminal ID
                     TXLOG = request.Substring(109, 288)                 //109~396  //66 + (331-288) Txlog(去掉Txlog的header:43 bytes)

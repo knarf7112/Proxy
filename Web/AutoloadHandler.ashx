@@ -15,8 +15,6 @@ using System.Diagnostics;
 public class AutoLoadHandler : IHttpHandler {
     
     private static readonly ILog log = LogManager.GetLogger(typeof(AutoLoadHandler));
-
-    private static readonly int AutoLoadLength = 148;
     
     /// <summary>
     /// 連向後台AP的設定資料(IP,Port,SendTimeout,ReceiveTimeout)
@@ -39,6 +37,10 @@ public class AutoLoadHandler : IHttpHandler {
     /// 此服務的回應電文通訊種別(4 bytes)
     /// </summary>
     private static readonly string Response_Com_Type = "0632";
+    /// <summary>
+    /// 自動加值電文長度
+    /// </summary>
+    private static readonly int AutoLoadLength = 150;
     /// <summary>
     /// 通用後台AP錯誤Return Code(6 bytes)
     /// </summary>
@@ -73,6 +75,7 @@ public class AutoLoadHandler : IHttpHandler {
             // 4. 若後端AP回應或轉換比對Request和Response有問題時
             if (response == null || !ParseResponseString(request, response, inputData, out responseString))
             {
+                log.Debug(m => { m.Invoke("後端回應:" + (response == null).ToString()); });
                 //後端無回應(後端異常)
                 responseString = GetResponseFailString(inputData);
             }
@@ -85,10 +88,12 @@ public class AutoLoadHandler : IHttpHandler {
         {
             //request not defined format
             log.Debug("Request Error");
-            context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);//.Write("Test");            
+            //context.Response.ContentType = "text/html";
+            //context.Response.Write("<script>alert('Request Error');</script>");
+            context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);            
         }
         timer.Start();
-        log.Debug("[AutoLoad]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "ms)");
+        log.Debug("[AutoLoad]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
         context.Response.OutputStream.Flush();
         context.Response.OutputStream.Close();
         //context.Response.End();//此段會造成以下的Statement不執行
@@ -102,8 +107,8 @@ public class AutoLoadHandler : IHttpHandler {
     /// <returns>異常回應通用格式</returns>
     private string GetResponseFailString(string inputData)
     {
-        //Com_Type + 原始電文 + Return Code + 原始電文(148 bytes)
-        string responseString = Response_Com_Type + inputData.Substring(4, 40) + Response_Generic_Error_ReturnCode + inputData.Substring(50, 98);
+        //Com_Type + 原始電文 + Return Code + 原始電文(150 bytes)
+        string responseString = Response_Com_Type + inputData.Substring(4, 40) + Response_Generic_Error_ReturnCode + inputData.Substring(50, 100);
 
         return responseString;
     }
@@ -123,7 +128,7 @@ public class AutoLoadHandler : IHttpHandler {
 
         //*********************************
         //檢查字典檔是否有設定檔資料
-        log.Debug("後台AP資料設定暫存是否存在:" + (dicApConfig == null).ToString());
+        log.Debug("後台AP資料設定暫存是否存在:" + (dicApConfig != null).ToString());
         if (dicApConfig == null)
         {
             lock (lockObj)
@@ -149,7 +154,7 @@ public class AutoLoadHandler : IHttpHandler {
         {
             using (SocketClient.Domain.SocketClient connectToAP = new SocketClient.Domain.SocketClient(dicApConfig[APServiceName].IP, dicApConfig[APServiceName].Port, dicApConfig[APServiceName].SendTimeout, dicApConfig[APServiceName].ReceiveTimeout))
             {
-                log.Debug("開始連線後端AP");
+                log.Debug("開始連線後端AP: IP(" + dicApConfig[APServiceName].IP + ":" + dicApConfig[APServiceName].Port + ")");
                 if (connectToAP.ConnectToServer())
                 {
                     responseBytes = connectToAP.SendAndReceive(requestBytes);
@@ -236,8 +241,9 @@ public class AutoLoadHandler : IHttpHandler {
                 READER_ID = request.Substring(50, 16),              //50~65   //8600000000000000:Terminal ID
                 ICC_NO = request.Substring(72, 16),                 //72~87   //5817000012345678:卡號
                 AL_AMT = Convert.ToInt32(request.Substring(96, 8)), //96~103  //00000500:交易金額
-                AL2POS_SN = request.Substring(120, 8)               //120~127 //00000000:交易序號
-                //RRN屬性還未設定 2015-08-10
+                AL2POS_SN = request.Substring(120, 8),              //120~127 //00000000:交易序號
+                AL_RRN = request.Substring(136, 12),                //136~147 //5+365+00+123456:RRN
+                AL_ENABLE = request.Substring(149, 1)               //148     // " " or "N" : 卡片自動加值啟用代碼   
             };
         }
         catch (Exception ex)
@@ -284,8 +290,10 @@ public class AutoLoadHandler : IHttpHandler {
                              requestString.Substring(4, 40) +   //4~43
                              response.AL2POS_RC +               //44~49
                              requestString.Substring(50, 70) +  //50~119
-                             response.AL2POS_SN +               //120~125
-                             requestString.Substring(128, 20);  //128~147
+                             response.AL2POS_SN.PadLeft(8,'0') +//120~127
+                             requestString.Substring(128, 8) +  //128~135
+                             response.AL_RRN +                  //136~147
+                             requestString.Substring(148, 2);   //148~149
             return true;
         }
         else

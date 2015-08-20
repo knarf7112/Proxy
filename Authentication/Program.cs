@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Xml.Serialization;
 //
 using Crypto.EskmsAPI;
+using System.Web.Routing;
 
 namespace Authentication
 {
@@ -15,14 +16,20 @@ namespace Authentication
     {
         public class Test
         {
-            public String value1;
-            public String value2;
+            public String value1 { get; set; }
+            public String value2 { get; set; }
         }
 
         public static void Main()
         {
-            iBonAuthenticate ibon = new iBonAuthenticate();
-
+            //System.Web.Routing.Route router = new System.Web.Routing.Route("http://www.google.com/",)
+            //IRouteHandler r ;
+        }
+        //
+        public static void Main2()
+        {
+            //iBonAuthenticate ibon = new iBonAuthenticate();
+            
             int qq = 111;
             byte[] n1 = BitConverter.GetBytes(qq);
             int q2 =  BitConverter.ToInt32(n1, 0);

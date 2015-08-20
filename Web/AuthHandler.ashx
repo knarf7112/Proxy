@@ -30,8 +30,8 @@ using System.Text;
             }
             else
             {
-                log.Debug("Test123");
-                context.Response.OutputStream.Write(Encoding.ASCII.GetBytes("Test123"), 0, 7);//.Write("Test");
+                log.Debug("Authenticate Error");
+                context.Response.OutputStream.Write(Encoding.ASCII.GetBytes("Authenticate Error"), 0, 18);
             }
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();

@@ -24,6 +24,7 @@ namespace Proxy
         static StaticObj()
         {
             log.Debug((m) => { m.Invoke("執行SingletonObj靜態初始化"); });
+            log.Debug(m => m("執行SingletonObj靜態初始化2"));
             InitialIpConfig();
         }
 
