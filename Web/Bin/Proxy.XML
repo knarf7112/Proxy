@@ -182,6 +182,79 @@
             並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
             </summary>
         </member>
+        <member name="T:Proxy.TxLogFileUpLoadHandler">
+            <summary>
+            TxLog Upload Handler
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogFileUpLoadHandler.TxLog_Config_Key">
+            <summary>
+            TxLog WebConfig Setting Key
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogFileUpLoadHandler.TxLogQueryStringName">
+            <summary>
+            要取得Uri上QueryString的名稱
+            </summary>
+        </member>
+        <member name="F:Proxy.TxLogFileUpLoadHandler.TxLog_Storage_Path">
+            <summary>
+            存放TxLog的資料夾路徑
+            </summary>
+        </member>
+        <member name="M:Proxy.TxLogFileUpLoadHandler.ProcessRequest(System.Web.HttpContext)">
+            <summary>
+            Request in
+            </summary>
+            <param name="context">HttpContext</param>
+        </member>
+        <member name="M:Proxy.TxLogFileUpLoadHandler.GetTxLogFileNameFromUri(System.Web.HttpRequest,System.String,System.String@)">
+            <summary>
+            取得Request上URI的指定QueryString
+            </summary>
+            <param name="request">HttpRequest object</param>
+            <param name="queryStringKey">specified query string</param>
+            <param name="fileName">回傳指定QueryString的值</param>
+            <returns>取值成功/取值失敗</returns>
+        </member>
+        <member name="M:Proxy.TxLogFileUpLoadHandler.Set_TxLog_Storage_Path">
+            <summary>
+            設定TxLog檔案存放路徑的靜態欄位值(TxLog_Storage_Path)
+            </summary>
+        </member>
+        <member name="M:Proxy.TxLogFileUpLoadHandler.CreateTodayFolder(System.String)">
+            <summary>
+            檢查(若無則建立)今日的資料夾是否存在
+            </summary>
+            <param name="path">指定的根目錄路徑</param>
+            <returns>根目錄路徑 + 今日資料夾</returns>
+        </member>
+        <member name="M:Proxy.TxLogFileUpLoadHandler.SaveRequestBodyAsFile(System.Web.HttpRequest,System.String)">
+            <summary>
+            取得Request內content的數據並寫入指定路徑
+            </summary>
+            <param name="request"></param>
+            <param name="filePath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Proxy.TxLogFileUpLoadHandler.CheckFilePath(System.String)">
+            <summary>
+            檢查檔案路徑是否存在
+            </summary>
+            <param name="filePath">檔案路徑</param>
+            <returns>存在/不存在</returns>
+        </member>
+        <member name="M:Proxy.TxLogFileUpLoadHandler.ReflectionAllPropertyValue(System.Object)">
+            <summary>
+            用來看進入物件的所有有數據的屬性名稱與值
+            </summary>
+            <param name="obj">Reflected object</param>
+        </member>
+        <member name="P:Proxy.TxLogFileUpLoadHandler.IsReusable">
+            <summary>
+            reusable
+            </summary>
+        </member>
         <member name="T:Proxy.TxLogHandler">
             <summary>
             TxLog Handler

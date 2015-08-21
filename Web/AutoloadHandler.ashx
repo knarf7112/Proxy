@@ -55,7 +55,7 @@ public class AutoLoadHandler : IHttpHandler {
         string responseString = null;
         byte[] responseBytes = null;
         AL2POS_Domain request = null;
-        Stopwatch timer = new System.Diagnostics.Stopwatch();
+        Stopwatch timer = new Stopwatch();
         timer.Start();
         
         log.Debug("[AutoLoad][UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent);

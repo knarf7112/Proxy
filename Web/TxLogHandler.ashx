@@ -111,6 +111,7 @@ public class TxLogHandler : IHttpHandler {
         timer.Start();
         context.Response.OutputStream.Flush();
         context.Response.OutputStream.Close();
+        //context.Response.Close();//異常:會產生2~3個request進入並且無法正常獲得Response
         log.Debug("[Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
         context.ApplicationInstance.CompleteRequest();
     }

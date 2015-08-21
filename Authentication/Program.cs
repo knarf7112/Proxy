@@ -22,6 +22,9 @@ namespace Authentication
 
         public static void Main()
         {
+            string filePath = @"C:\MyDirectory\My.File.bat";
+            string data = System.IO.Path.GetDirectoryName(filePath);
+            bool isExist = Directory.Exists(data);
             //System.Web.Routing.Route router = new System.Web.Routing.Route("http://www.google.com/",)
             //IRouteHandler r ;
         }
