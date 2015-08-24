@@ -9,22 +9,16 @@ using ALCommon;
 using System.Collections.Generic;
 using System.Text;
 using System.Configuration;
-using Proxy.POCO;
+using Proxy;
 using System.Diagnostics;
 
 public class AutoLoadHandler : IHttpHandler {
-    
+
     private static readonly ILog log = LogManager.GetLogger(typeof(AutoLoadHandler));
-    
-    /// <summary>
-    /// 連向後台AP的設定資料(IP,Port,SendTimeout,ReceiveTimeout)
-    /// Key:設定檔的appSettings裡的Name
-    /// </summary>
-    private static IDictionary<string, ServiceConfig> dicApConfig;
     /// <summary>
     /// 要從web config檔內讀取的資料名稱
     /// </summary>
-    private static readonly string APServiceName = "AutoLoadService";
+    private static readonly string ServiceName = "AutoLoadService";
     /// <summary>
     /// used to lock dicApConfig
     /// </summary>
@@ -50,14 +44,14 @@ public class AutoLoadHandler : IHttpHandler {
     /// Request in
     /// </summary>
     /// <param name="context">HttpContext</param>
-    public void ProcessRequest (HttpContext context) 
+    public void ProcessRequest(HttpContext context)
     {
         string responseString = null;
         byte[] responseBytes = null;
         AL2POS_Domain request = null;
-        Stopwatch timer = new Stopwatch();
+        Stopwatch timer = new System.Diagnostics.Stopwatch();
         timer.Start();
-        
+
         log.Debug("[AutoLoad][UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent);
         // 1. get request dat from input stream by ASCII
         string inputData = GetStringFromInputStream(context, Encoding.ASCII);
@@ -90,7 +84,7 @@ public class AutoLoadHandler : IHttpHandler {
             log.Debug("Request Error");
             //context.Response.ContentType = "text/html";
             //context.Response.Write("<script>alert('Request Error');</script>");
-            context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);            
+            context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);
         }
         timer.Start();
         log.Debug("[AutoLoad]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
@@ -112,58 +106,61 @@ public class AutoLoadHandler : IHttpHandler {
 
         return responseString;
     }
-    
+
     /// <summary>
     /// Send Reuqest POCO to Center AP and receive response POCO
     /// </summary>
     /// <param name="request">自動加值請求物件</param>
     /// <returns>自動加值回應物件</returns>
     private AL2POS_Domain SendAndReceiveFromAP(AL2POS_Domain request)
-    {        
+    {
         AL2POS_Domain response = null;
         string requestStr = null;
         byte[] requestBytes = null;
         string responseString = null;
         byte[] responseBytes = null;
-
+        string serverConfig = null;
+        string ip = null;
+        int port = -1;
+        int sendTimeout = -1;
+        int receiveTimeout = -1;
+        string[] configs = null;
         //*********************************
-        //檢查字典檔是否有設定檔資料
-        log.Debug("後台AP資料設定暫存是否存在:" + (dicApConfig != null).ToString());
-        if (dicApConfig == null)
+        //取得連線後台的WebConfig設定資料
+        serverConfig = ConfigGetter.GetValue(ServiceName);
+        log.Debug(m => { m.Invoke(ServiceName + ":" + serverConfig); });
+        if (serverConfig != null)
         {
-            lock (lockObj)
-            {
-                if (dicApConfig == null)
-                {
-                    InitialIpConfig();
-                }
-            }
+            configs = serverConfig.Split(':');
+            ip = configs[0];
+            port = Convert.ToInt32(configs[1]);
+            sendTimeout = Convert.ToInt32(configs[2]);
+            receiveTimeout = Convert.ToInt32(configs[3]);
         }
-        else if (!dicApConfig.ContainsKey(APServiceName))
+        else
         {
-            log.Error("WebConfig的appSettings[" + APServiceName + "] 設定資料不存在");
+            log.Error("要連結的目的地設定資料不存在:" + ServiceName);
             return null;
         }
         //*********************************
-        
-        //UTF8(JSON(POCO))=>byte array and send to AP
-        requestStr = JsonConvert.SerializeObject(request);
-        log.Debug("Request JsonString:" + requestStr);
-        requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
         try
         {
-            using (SocketClient.Domain.SocketClient connectToAP = new SocketClient.Domain.SocketClient(dicApConfig[APServiceName].IP, dicApConfig[APServiceName].Port, dicApConfig[APServiceName].SendTimeout, dicApConfig[APServiceName].ReceiveTimeout))
+            using (SocketClient.Domain.SocketClient connectToAP = new SocketClient.Domain.SocketClient(ip, port, sendTimeout, receiveTimeout))
             {
-                log.Debug("開始連線後端AP: IP(" + dicApConfig[APServiceName].IP + ":" + dicApConfig[APServiceName].Port + ")");
+                log.Debug("開始連線後端服務:" + serverConfig);
                 if (connectToAP.ConnectToServer())
                 {
+                    //UTF8(JSON(POCO))=>byte array and send to AP
+                    requestStr = JsonConvert.SerializeObject(request);
+                    log.Debug("Request JsonString:" + requestStr);
+                    requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
                     responseBytes = connectToAP.SendAndReceive(requestBytes);
                     if (responseBytes != null)
                     {
                         responseString = Encoding.UTF8.GetString(responseBytes);
-                        log.Debug("Response JsonString:" + responseString);
                         response = JsonConvert.DeserializeObject<AL2POS_Domain>(responseString);
                     }
+                    log.Debug(m => { m.Invoke("Response JsonString:" + ((responseBytes == null) ? "null" : responseString)); });
                 }
             }
         }
@@ -175,39 +172,6 @@ public class AutoLoadHandler : IHttpHandler {
     }
 
     /// <summary>
-    /// 檢查Web.config的AppSettings內是否有設定後端服務的IP,Port,送出和接收逾時
-    /// 並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
-    /// </summary>
-    private void InitialIpConfig()
-    {
-        log.Debug("開始載入Web.Config的AppSettings設定檔");
-        AutoLoadHandler.dicApConfig = new Dictionary<string, ServiceConfig>();
-        try
-        {
-            foreach (string item in ConfigurationManager.AppSettings.Keys)
-            {
-                //找包含"Service"名稱的當作IP設定資料
-                if (item.IndexOf("Service") > -1)
-                {
-                    string[] serviceConfig = ConfigurationManager.AppSettings[item].Split(':');
-                    ServiceConfig config = new ServiceConfig()
-                    {
-                        IP = serviceConfig[0],
-                        Port = Convert.ToInt32(serviceConfig[1]),
-                        SendTimeout = Convert.ToInt32(serviceConfig[2]),
-                        ReceiveTimeout = Convert.ToInt32(serviceConfig[3])
-                    };
-                    AutoLoadHandler.dicApConfig.Add(item, config);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            log.Debug("Web設定檔載入資料錯誤:" + ex.StackTrace);
-        }
-    }
-    
-    /// <summary>
     /// 自動加值請求電文字串轉自動加值請求物件(要傳給後端AP用的)
     /// </summary>
     /// <param name="request">自動加值請求電文字串(ASCII)</param>
@@ -215,7 +179,7 @@ public class AutoLoadHandler : IHttpHandler {
     private AL2POS_Domain ParseRequestString(string request)
     {
         AL2POS_Domain toAPObject = null;
-        
+
         //文件格式參考: iCash2@iBon_Format_20150810.xlsx
         if (request.Length != AutoLoadLength)
         {
@@ -243,7 +207,7 @@ public class AutoLoadHandler : IHttpHandler {
                 AL_AMT = Convert.ToInt32(request.Substring(96, 8)), //96~103  //00000500:交易金額
                 AL2POS_SN = request.Substring(120, 8),              //120~127 //00000000:交易序號
                 AL_RRN = request.Substring(136, 12),                //136~147 //5+365+00+123456:RRN
-                AL_ENABLE = request.Substring(149, 1)               //148     // " " or "N" : 卡片自動加值啟用代碼   
+                AL_ENABLE = request.Substring(148, 1)               //148     // " " or "N" : 卡片自動加值啟用代碼   
             };
         }
         catch (Exception ex)
@@ -261,13 +225,13 @@ public class AutoLoadHandler : IHttpHandler {
     /// <param name="requestString">RequestString</param>
     /// <param name="responseString"></param>
     /// <returns>成功out出response字串/失敗out null</returns>
-    private bool ParseResponseString(AL2POS_Domain request,AL2POS_Domain response,string requestString,out string responseString)
+    private bool ParseResponseString(AL2POS_Domain request, AL2POS_Domain response, string requestString, out string responseString)
     {
-        if(request.COM_TYPE == response.COM_TYPE &&
+        if (request.COM_TYPE == response.COM_TYPE &&
             request.MERC_FLG == response.MERC_FLG &&
             //request.AL_TRANSTIME == response.AL_TRANSTIME && //因後台AP沒回傳交易時間所以不能比對
-            request.ICC_NO == response.ICC_NO && 
-            request.STORE_NO == response.STORE_NO && 
+            request.ICC_NO == response.ICC_NO &&
+            request.STORE_NO == response.STORE_NO &&
             request.AL_AMT == response.AL_AMT)
         {
             //依文件規格 iCash2@iBon_Format_20150810.xlsx
@@ -290,7 +254,7 @@ public class AutoLoadHandler : IHttpHandler {
                              requestString.Substring(4, 40) +   //4~43
                              response.AL2POS_RC +               //44~49
                              requestString.Substring(50, 70) +  //50~119
-                             response.AL2POS_SN.PadLeft(8,'0') +//120~127
+                             response.AL2POS_SN.PadLeft(8, '0') +//120~127
                              requestString.Substring(128, 8) +  //128~135
                              response.AL_RRN +                  //136~147
                              requestString.Substring(148, 2);   //148~149
@@ -302,14 +266,14 @@ public class AutoLoadHandler : IHttpHandler {
             return false;
         }
     }
-    
+
     /// <summary>
     /// Get request string from HttpContext Input Stream
     /// </summary>
     /// <param name="context">current HttpContext</param>
     /// <param name="encoding">要使用的編碼方式</param>
     /// <returns>電文字串(已編碼)</returns>
-    private static string GetStringFromInputStream(HttpContext context,Encoding encoding)
+    private static string GetStringFromInputStream(HttpContext context, Encoding encoding)
     {
         StreamReader sr = new StreamReader(context.Request.InputStream, encoding);
         string result = sr.ReadToEnd();
@@ -342,9 +306,11 @@ public class AutoLoadHandler : IHttpHandler {
         Array.Resize(ref buffer, readLength);
         return buffer;
     }
-    
-    public bool IsReusable {
-        get {
+
+    public bool IsReusable
+    {
+        get
+        {
             return false;
         }
     }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 //
 using Common.Logging;
-using Proxy.POCO;
 using System.Web;
 using ALCommon;
 using System.Diagnostics;
@@ -21,11 +20,6 @@ namespace Proxy
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(TxLogHandler));
 
-        /// <summary>
-        /// 連向後台AP的設定資料(IP,Port,SendTimeout,ReceiveTimeout)
-        /// Key:設定檔的appSettings裡的Name
-        /// </summary>
-        private static IDictionary<string, ServiceConfig> dicApConfig;
         /// <summary>
         /// 要從web config檔內讀取的資料名稱(TxLog寫入成功時使用的連線設定)
         /// </summary>
@@ -115,6 +109,7 @@ namespace Proxy
             timer.Start();
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
+            //context.Response.Close();//異常:會產生2~3個request進入並且無法正常獲得Response
             log.Debug("[Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
             context.ApplicationInstance.CompleteRequest();
         }
@@ -172,7 +167,7 @@ namespace Proxy
                     MERC_FLG = request.Substring(4, 3),                 //4~6     //SET:通路別
                     STORE_NO = request.Substring(7, 8),                 //7~14    //01234567:店號
                     REG_ID = request.Substring(15, 3),                  //15~17   //000:POS機編號
-                    POS_SEQNO = request.Substring(18, 8).Substring(2,6),//18~25   //Pos交易序號
+                    POS_SEQNO = request.Substring(18, 8),               //18~25   //Pos交易序號
                     TXLOG_RC = request.Substring(44, 6),                //44~49   //中心端回應碼
                     READER_ID = request.Substring(50, 16),              //50~55   //Terminal ID
                     TXLOG = request.Substring(109, 288)                 //109~396  //66 + (331-288) Txlog(去掉Txlog的header:43 bytes)
@@ -239,45 +234,48 @@ namespace Proxy
             byte[] requestBytes = null;
             string responseString = null;
             byte[] responseBytes = null;
-
+            string serverConfig = null;
+            string ip = null;
+            int port = -1;
+            int sendTimeout = -1;
+            int receiveTimeout = -1;
+            string[] configs = null;
             //*********************************
-            //檢查字典檔是否有設定檔資料
-            log.Debug("後台AP資料設定暫存是否存在:" + (dicApConfig == null).ToString());
-            if (dicApConfig == null)
+            //取得連線後台的WebConfig設定資料
+            serverConfig = ConfigGetter.GetValue(serviceName);
+            log.Debug(m => { m.Invoke(serviceName + ":" + serverConfig); });
+            if (serverConfig != null)
             {
-                lock (lockObj)
-                {
-                    if (dicApConfig == null)
-                    {
-                        InitialIpConfig();
-                    }
-                }
+                configs = serverConfig.Split(':');
+                ip = configs[0];
+                port = Convert.ToInt32(configs[1]);
+                sendTimeout = Convert.ToInt32(configs[2]);
+                receiveTimeout = Convert.ToInt32(configs[3]);
             }
-            else if (!dicApConfig.ContainsKey(serviceName))
+            else
             {
-                log.Error("WebConfig的appSettings[" + serviceName + "] 設定資料不存在");
+                log.Error("要連結的目的地設定資料不存在:" + serviceName);
                 return null;
             }
             //*********************************
-
-            //UTF8(JSON(POCO))=>byte array and send to AP
-            requestStr = JsonConvert.SerializeObject(request);
-            log.Debug("Request JsonString:" + requestStr);
-            requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
             try
             {
-                using (SocketClient.Domain.SocketClient connectToAP = new SocketClient.Domain.SocketClient(dicApConfig[serviceName].IP, dicApConfig[serviceName].Port, dicApConfig[serviceName].SendTimeout, dicApConfig[serviceName].ReceiveTimeout))
+                using (SocketClient.Domain.SocketClient connectToAP = new SocketClient.Domain.SocketClient(ip, port, sendTimeout, receiveTimeout))
                 {
-                    log.Debug("開始連線後端AP");
+                    log.Debug("開始連線後端服務:" + serverConfig);
                     if (connectToAP.ConnectToServer())
                     {
+                        //UTF8(JSON(POCO))=>byte array and send to AP
+                        requestStr = JsonConvert.SerializeObject(request);
+                        log.Debug("Request JsonString:" + requestStr);
+                        requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
                         responseBytes = connectToAP.SendAndReceive(requestBytes);
                         if (responseBytes != null)
                         {
                             responseString = Encoding.UTF8.GetString(responseBytes);
-                            log.Debug("Response JsonString:" + responseString);
                             response = JsonConvert.DeserializeObject<ALTxlog_Domain>(responseString);
                         }
+                        log.Debug(m => { m.Invoke("Response JsonString:" + ((responseBytes == null) ? "null" : responseString)); });
                     }
                 }
             }
@@ -286,39 +284,6 @@ namespace Proxy
                 log.Error("後台連線異常:" + ex.StackTrace);
             }
             return response;
-        }
-
-        /// <summary>
-        /// 檢查Web.config的AppSettings內是否有設定後端服務的IP,Port,送出和接收逾時
-        /// 並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
-        /// </summary>
-        private void InitialIpConfig()
-        {
-            log.Debug("開始載入Web.Config的AppSettings設定檔");
-            TxLogHandler.dicApConfig = new Dictionary<string, ServiceConfig>();
-            try
-            {
-                foreach (string item in ConfigurationManager.AppSettings.Keys)
-                {
-                    //找包含"Service"名稱的當作IP設定資料
-                    if (item.IndexOf("Service") > -1)
-                    {
-                        string[] serviceConfig = ConfigurationManager.AppSettings[item].Split(':');
-                        ServiceConfig config = new ServiceConfig()
-                        {
-                            IP = serviceConfig[0],
-                            Port = Convert.ToInt32(serviceConfig[1]),
-                            SendTimeout = Convert.ToInt32(serviceConfig[2]),
-                            ReceiveTimeout = Convert.ToInt32(serviceConfig[3])
-                        };
-                        TxLogHandler.dicApConfig.Add(item, config);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Debug("Web設定檔載入資料錯誤:" + ex.StackTrace);
-            }
         }
 
         /// <summary>

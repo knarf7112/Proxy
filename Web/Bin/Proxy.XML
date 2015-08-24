@@ -48,13 +48,7 @@
             自動加值Handler
             </summary>
         </member>
-        <member name="F:Proxy.AutoLoadHandler.dicApConfig">
-            <summary>
-            連向後台AP的設定資料(IP,Port,SendTimeout,ReceiveTimeout)
-            Key:設定檔的appSettings裡的Name
-            </summary>
-        </member>
-        <member name="F:Proxy.AutoLoadHandler.APServiceName">
+        <member name="F:Proxy.AutoLoadHandler.ServiceName">
             <summary>
             要從web config檔內讀取的資料名稱
             </summary>
@@ -104,12 +98,6 @@
             <param name="request">自動加值請求物件</param>
             <returns>自動加值回應物件</returns>
         </member>
-        <member name="M:Proxy.AutoLoadHandler.InitialIpConfig">
-            <summary>
-            檢查Web.config的AppSettings內是否有設定後端服務的IP,Port,送出和接收逾時
-            並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
-            </summary>
-        </member>
         <member name="M:Proxy.AutoLoadHandler.ParseRequestString(System.String)">
             <summary>
             自動加值請求電文字串轉自動加值請求物件(要傳給後端AP用的)
@@ -149,6 +137,94 @@
             <param name="context">current HttpContext</param>
             <returns>電文陣列(未編碼)</returns>
         </member>
+        <member name="T:Proxy.CardLockHandler">
+            <summary>
+            鎖卡 handler
+            </summary>
+        </member>
+        <member name="F:Proxy.CardLockHandler.ServiceName">
+            <summary>
+            要從web config檔內讀取的資料名稱(鎖卡TxLog要回傳的後台Uri)
+            </summary>
+        </member>
+        <member name="F:Proxy.CardLockHandler.TxlogLength">
+            <summary>
+            規格指定的電文長度
+            </summary>
+        </member>
+        <member name="F:Proxy.CardLockHandler.Request_Com_Type">
+            <summary>
+            此服務的請求電文通訊種別(4 bytes)
+            </summary>
+        </member>
+        <member name="F:Proxy.CardLockHandler.Response_Com_Type">
+            <summary>
+            此服務的回應電文通訊種別(4 bytes)
+            </summary>
+        </member>
+        <member name="F:Proxy.CardLockHandler.Response_Generic_Error_ReturnCode">
+            <summary>
+            通用後台AP錯誤Return Code(6 bytes)
+            </summary>
+        </member>
+        <member name="F:Proxy.CardLockHandler.TxLogInnerReturnCode_OK">
+            <summary>
+            正常交易的Return Code(用來比對TxLog內卡機回傳的Return Code)
+            </summary>
+        </member>
+        <member name="M:Proxy.CardLockHandler.SendAndReceiveFromAP(IBON_TRADE_MANAGER_Lib.TOL_Soc_Req,System.String)">
+            <summary>
+            Send Reuqest POCO to Center AP and receive response POCO
+            </summary>
+            <param name="request">自動加值請求物件</param>
+            <returns>自動加值回應物件</returns>
+        </member>
+        <member name="M:Proxy.CardLockHandler.ParseRequestString(System.String)">
+            <summary>
+            自動加值Txlog請求電文字串轉自動加值Txlog請求物件(要傳給後端AP用的)
+            </summary>
+            <param name="request">自動加值Txlog請求電文字串(ASCII)</param>
+            <returns>自動加值Txlog請求物件</returns>
+        </member>
+        <member name="M:Proxy.CardLockHandler.ParseResponseString(IBON_TRADE_MANAGER_Lib.TOL_Soc_Req,IBON_TRADE_MANAGER_Lib.TOL_Soc_Req,System.String,System.String@)">
+            <summary>
+            比對並轉換Request和Response物件,請求和回應是同一組則out電文字串,不同out null
+            </summary>
+            <param name="request">RequestPOCO</param>
+            <param name="response">ResponsePOCO</param>
+            <param name="requestString">RequestString</param>
+            <param name="responseString"></param>
+            <returns>成功out出response字串/失敗out null</returns>
+        </member>
+        <member name="M:Proxy.CardLockHandler.GetResponseFailString(System.String)">
+            <summary>
+            鎖卡Txlog後端異常回應通用格式
+            </summary>
+            <param name="inputData">Reqeust 電文</param>
+            <returns>異常回應通用格式</returns>
+        </member>
+        <member name="M:Proxy.CardLockHandler.GetStringFromInputStream(System.Web.HttpContext,System.Text.Encoding)">
+            <summary>
+            Get request string from HttpContext Input Stream
+            </summary>
+            <param name="context">current HttpContext</param>
+            <param name="encoding">要使用的編碼方式</param>
+            <returns>電文字串(已編碼)</returns>
+        </member>
+        <member name="M:Proxy.CardLockHandler.StringToByteArray(System.String)">
+            <summary>
+            hex string to byte array
+            </summary>
+            <param name="hex">hex data</param>
+            <returns></returns>
+        </member>
+        <member name="M:Proxy.CardLockHandler.GetBytesFromInputStream(System.Web.HttpContext)">
+            <summary>
+            Get request byte array from HttpContext Input Stream
+            </summary>
+            <param name="context">current HttpContext</param>
+            <returns>電文陣列(未編碼)</returns>
+        </member>
         <member name="T:Proxy.CardValidationHandler">
             <summary>
             檢核卡號有效性,連到AP的檢查服務6103
@@ -164,22 +240,21 @@
             <param name="port"></param>
             <returns>Return Code(若傳輸異常回傳null)</returns>
         </member>
-        <member name="T:Proxy.StaticObj">
+        <member name="T:Proxy.ConfigGetter">
             <summary>
-            存放設定檔用的靜態物件(測試階段)
+            存放設定檔用的靜態物件
             </summary>
         </member>
-        <member name="M:Proxy.StaticObj.GetConfigInstance(System.String)">
+        <member name="M:Proxy.ConfigGetter.GetValue(System.String)">
             <summary>
-            取得後台AP服務的連線資訊物件
+            指定Key取得字典檔內的設定資料
             </summary>
-            <param name="ServiceConfigName">後台AP服務名稱</param>
-            <returns>後台AP服務連線資訊</returns>
+            <param name="configName"></param>
+            <returns></returns>
         </member>
-        <member name="M:Proxy.StaticObj.InitialIpConfig">
+        <member name="M:Proxy.ConfigGetter.InitialConfig">
             <summary>
-            檢查Web.config的AppSettings內是否有設定後端服務的IP,Port,送出和接收逾時
-            並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
+            初始化靜態字典檔並將Config檔內所有的AppSetting數據載入字典檔內
             </summary>
         </member>
         <member name="T:Proxy.TxLogFileUpLoadHandler">
@@ -258,12 +333,6 @@
         <member name="T:Proxy.TxLogHandler">
             <summary>
             TxLog Handler
-            </summary>
-        </member>
-        <member name="F:Proxy.TxLogHandler.dicApConfig">
-            <summary>
-            連向後台AP的設定資料(IP,Port,SendTimeout,ReceiveTimeout)
-            Key:設定檔的appSettings裡的Name
             </summary>
         </member>
         <member name="F:Proxy.TxLogHandler.TxLogServiceName">
@@ -349,12 +418,6 @@
             </summary>
             <param name="request">自動加值請求物件</param>
             <returns>自動加值回應物件</returns>
-        </member>
-        <member name="M:Proxy.TxLogHandler.InitialIpConfig">
-            <summary>
-            檢查Web.config的AppSettings內是否有設定後端服務的IP,Port,送出和接收逾時
-            並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
-            </summary>
         </member>
         <member name="M:Proxy.TxLogHandler.GetStringFromInputStream(System.Web.HttpContext,System.Text.Encoding)">
             <summary>

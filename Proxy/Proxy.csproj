@@ -45,6 +45,9 @@
     <Reference Include="Common.Logging.Log4Net">
       <HintPath>..\Libs\Common.Logging.Log4Net.dll</HintPath>
     </Reference>
+    <Reference Include="IBON_TRADE_MANAGER_Lib">
+      <HintPath>..\Libs\IBON_TRADE_MANAGER_Lib.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\Libs\log4net.dll</HintPath>
     </Reference>
@@ -58,16 +61,19 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Web" />
+    <Reference Include="WebHttpClient">
+      <HintPath>..\Libs\WebHttpClient.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthenticateHandler.cs" />
     <Compile Include="AutoLoadHandler.cs" />
+    <Compile Include="CardLockHandler.cs" />
     <Compile Include="CardValidationHandler.cs" />
     <Compile Include="CheckTimeHandler.cs" />
-    <Compile Include="POCO\ServiceConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StaticObj.cs" />
+    <Compile Include="ConfigGetter.cs" />
     <Compile Include="TxLogFileUpLoadHandler.cs" />
     <Compile Include="TxLogHandler.cs" />
   </ItemGroup>

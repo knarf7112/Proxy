@@ -9,13 +9,14 @@
             使用WebRequest
             </summary>
         </member>
-        <member name="M:WebHttpClient.Client.GetResponse(System.String,System.String,System.Byte[],System.Boolean,System.Net.ICredentials,System.Int32,System.String)">
+        <member name="M:WebHttpClient.Client.GetResponse(System.String,System.String,System.Byte[],System.String@,System.Boolean,System.Net.ICredentials,System.Int32,System.String)">
             <summary>
             設定Uri,與資料並送出Request後等待Response
             </summary>
             <param name="uriString">目的地Uri</param>
             <param name="method">Get/Post</param>
             <param name="sendData">null(Get)/bytes(Post)</param>
+            <param name="errorMsg">異常輸出(default:"")</param>
             <param name="debugDisplay"></param>
             <param name="credential">認證用(default:null)</param>
             <param name="timeOut">要求逾時</param>

@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using System.Web;
 using Common.Logging;
 using System.Configuration;
-using Proxy.POCO;
+using Proxy;
 using System.Diagnostics;
 
 namespace Proxy
@@ -19,16 +19,10 @@ namespace Proxy
     public class AutoLoadHandler : IHttpHandler
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(AutoLoadHandler));
-
-        /// <summary>
-        /// 連向後台AP的設定資料(IP,Port,SendTimeout,ReceiveTimeout)
-        /// Key:設定檔的appSettings裡的Name
-        /// </summary>
-        private static IDictionary<string, ServiceConfig> dicApConfig;
         /// <summary>
         /// 要從web config檔內讀取的資料名稱
         /// </summary>
-        private static readonly string APServiceName = "AutoLoadService";
+        private static readonly string ServiceName = "AutoLoadService";
         /// <summary>
         /// used to lock dicApConfig
         /// </summary>
@@ -129,45 +123,48 @@ namespace Proxy
             byte[] requestBytes = null;
             string responseString = null;
             byte[] responseBytes = null;
-
+            string serverConfig = null;
+            string ip = null;
+            int port = -1;
+            int sendTimeout = -1;
+            int receiveTimeout = -1;
+            string[] configs = null;  
             //*********************************
-            //檢查字典檔是否有設定檔資料
-            log.Debug("後台AP資料設定暫存是否存在:" + (dicApConfig != null).ToString());
-            if (dicApConfig == null)
+            //取得連線後台的WebConfig設定資料
+            serverConfig = ConfigGetter.GetValue(ServiceName);
+            log.Debug(m => { m.Invoke(ServiceName + ":" + serverConfig); });
+            if (serverConfig != null)
             {
-                lock (lockObj)
-                {
-                    if (dicApConfig == null)
-                    {
-                        InitialIpConfig();
-                    }
-                }
+                configs = serverConfig.Split(':');
+                ip = configs[0];
+                port = Convert.ToInt32(configs[1]);
+                sendTimeout = Convert.ToInt32(configs[2]);
+                receiveTimeout = Convert.ToInt32(configs[3]);
             }
-            else if (!dicApConfig.ContainsKey(APServiceName))
+            else
             {
-                log.Error("WebConfig的appSettings[" + APServiceName + "] 設定資料不存在");
+                log.Error("要連結的目的地設定資料不存在:" + ServiceName);
                 return null;
             }
             //*********************************
-
-            //UTF8(JSON(POCO))=>byte array and send to AP
-            requestStr = JsonConvert.SerializeObject(request);
-            log.Debug("Request JsonString:" + requestStr);
-            requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
             try
             {
-                using (SocketClient.Domain.SocketClient connectToAP = new SocketClient.Domain.SocketClient(dicApConfig[APServiceName].IP, dicApConfig[APServiceName].Port, dicApConfig[APServiceName].SendTimeout, dicApConfig[APServiceName].ReceiveTimeout))
+                using (SocketClient.Domain.SocketClient connectToAP = new SocketClient.Domain.SocketClient(ip, port, sendTimeout, receiveTimeout))
                 {
-                    log.Debug("開始連線後端AP: IP(" + dicApConfig[APServiceName].IP + ":" + dicApConfig[APServiceName].Port + ")");
+                    log.Debug("開始連線後端服務:" + serverConfig);
                     if (connectToAP.ConnectToServer())
                     {
+                        //UTF8(JSON(POCO))=>byte array and send to AP
+                        requestStr = JsonConvert.SerializeObject(request);
+                        log.Debug("Request JsonString:" + requestStr);
+                        requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
                         responseBytes = connectToAP.SendAndReceive(requestBytes);
                         if (responseBytes != null)
                         {
                             responseString = Encoding.UTF8.GetString(responseBytes);
-                            log.Debug("Response JsonString:" + responseString);
                             response = JsonConvert.DeserializeObject<AL2POS_Domain>(responseString);
                         }
+                        log.Debug(m => { m.Invoke("Response JsonString:" + ((responseBytes == null) ? "null" : responseString)); });
                     }
                 }
             }
@@ -176,39 +173,6 @@ namespace Proxy
                 log.Error("後台連線異常:" + ex.StackTrace);
             }
             return response;
-        }
-
-        /// <summary>
-        /// 檢查Web.config的AppSettings內是否有設定後端服務的IP,Port,送出和接收逾時
-        /// 並設定到AutoLoadHandler.apIPConfig的字典檔裡暫存
-        /// </summary>
-        private void InitialIpConfig()
-        {
-            log.Debug("開始載入Web.Config的AppSettings設定檔");
-            AutoLoadHandler.dicApConfig = new Dictionary<string, ServiceConfig>();
-            try
-            {
-                foreach (string item in ConfigurationManager.AppSettings.Keys)
-                {
-                    //找包含"Service"名稱的當作IP設定資料
-                    if (item.IndexOf("Service") > -1)
-                    {
-                        string[] serviceConfig = ConfigurationManager.AppSettings[item].Split(':');
-                        ServiceConfig config = new ServiceConfig()
-                        {
-                            IP = serviceConfig[0],
-                            Port = Convert.ToInt32(serviceConfig[1]),
-                            SendTimeout = Convert.ToInt32(serviceConfig[2]),
-                            ReceiveTimeout = Convert.ToInt32(serviceConfig[3])
-                        };
-                        AutoLoadHandler.dicApConfig.Add(item, config);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Debug("Web設定檔載入資料錯誤:" + ex.StackTrace);
-            }
         }
 
         /// <summary>
