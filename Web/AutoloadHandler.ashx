@@ -49,6 +49,7 @@ public class AutoLoadHandler : IHttpHandler {
         string responseString = null;
         byte[] responseBytes = null;
         AL2POS_Domain request = null;
+        AL2POS_Domain response = null;
         Stopwatch timer = new System.Diagnostics.Stopwatch();
         timer.Start();
 
@@ -65,7 +66,7 @@ public class AutoLoadHandler : IHttpHandler {
         if (request != null)
         {
             // 3. Connect Center AP and Send Request POCO then get response POCO
-            AL2POS_Domain response = SendAndReceiveFromAP(request);
+            response = SendAndReceiveFromAP(request, ServiceName);
             // 4. 若後端AP回應或轉換比對Request和Response有問題時
             if (response == null || !ParseResponseString(request, response, inputData, out responseString))
             {
@@ -112,7 +113,7 @@ public class AutoLoadHandler : IHttpHandler {
     /// </summary>
     /// <param name="request">自動加值請求物件</param>
     /// <returns>自動加值回應物件</returns>
-    private AL2POS_Domain SendAndReceiveFromAP(AL2POS_Domain request)
+    private AL2POS_Domain SendAndReceiveFromAP(AL2POS_Domain request, string serviceName)
     {
         AL2POS_Domain response = null;
         string requestStr = null;
@@ -127,8 +128,8 @@ public class AutoLoadHandler : IHttpHandler {
         string[] configs = null;
         //*********************************
         //取得連線後台的WebConfig設定資料
-        serverConfig = ConfigGetter.GetValue(ServiceName);
-        log.Debug(m => { m.Invoke(ServiceName + ":" + serverConfig); });
+        serverConfig = ConfigGetter.GetValue(serviceName);
+        log.Debug(m => { m.Invoke(serviceName + ":" + serverConfig); });
         if (serverConfig != null)
         {
             configs = serverConfig.Split(':');
@@ -139,7 +140,7 @@ public class AutoLoadHandler : IHttpHandler {
         }
         else
         {
-            log.Error("要連結的目的地設定資料不存在:" + ServiceName);
+            log.Error("要連結的目的地設定資料不存在:" + serviceName);
             return null;
         }
         //*********************************
@@ -152,7 +153,7 @@ public class AutoLoadHandler : IHttpHandler {
                 {
                     //UTF8(JSON(POCO))=>byte array and send to AP
                     requestStr = JsonConvert.SerializeObject(request);
-                    log.Debug("Request JsonString:" + requestStr);
+                    log.Debug(m => m("[AutoLoad]Request JsonString({0}): {1}", serverConfig, requestStr));
                     requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
                     responseBytes = connectToAP.SendAndReceive(requestBytes);
                     if (responseBytes != null)
@@ -160,7 +161,7 @@ public class AutoLoadHandler : IHttpHandler {
                         responseString = Encoding.UTF8.GetString(responseBytes);
                         response = JsonConvert.DeserializeObject<AL2POS_Domain>(responseString);
                     }
-                    log.Debug(m => { m.Invoke("Response JsonString:" + ((responseBytes == null) ? "null" : responseString)); });
+                    log.Debug(m => { m.Invoke("[AutoLoad]Response JsonString: {0}", ((responseBytes == null) ? "null" : responseString)); });
                 }
             }
         }
@@ -180,15 +181,15 @@ public class AutoLoadHandler : IHttpHandler {
     {
         AL2POS_Domain toAPObject = null;
 
-        //文件格式參考: iCash2@iBon_Format_20150810.xlsx
+        //文件格式參考: iCash2@iBon_Format_20150820(內部使用).xlsx
         if (request.Length != AutoLoadLength)
         {
-            log.Debug("Request字串長度不符:" + request.Length);
+            log.Debug("[AutoLoad]Request字串長度不符:" + request.Length);
             return null;
         }
         else if (!request.Substring(0, 4).Equals(Request_Com_Type))
         {
-            log.Debug("Request通訊種別不符:" + request.Substring(0, 4));
+            log.Debug("[AutoLoad]Request通訊種別不符:" + request.Substring(0, 4));
             return null;
         }
 
@@ -212,7 +213,7 @@ public class AutoLoadHandler : IHttpHandler {
         }
         catch (Exception ex)
         {
-            log.Error("轉換Request物件失敗:" + ex.StackTrace);
+            log.Error("[AutoLoad]轉換Request物件失敗:" + ex.StackTrace);
         }
         return toAPObject;
     }
@@ -234,7 +235,7 @@ public class AutoLoadHandler : IHttpHandler {
             request.STORE_NO == response.STORE_NO &&
             request.AL_AMT == response.AL_AMT)
         {
-            //依文件規格 iCash2@iBon_Format_20150810.xlsx
+            //依文件規格 iCash2@iBon_Format_20150820(內部使用).xlsx
             //********************************************
             //string response_SAM_TSN = (Convert.ToInt32(requestString.Substring(66, 6)) - 1).ToString("D6");
             //string response_Card_LSN = (Convert.ToInt32(requestString.Substring(88, 8)) + 1).ToString("D8");

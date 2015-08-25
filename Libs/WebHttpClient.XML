@@ -6,24 +6,37 @@
     <members>
         <member name="T:WebHttpClient.Client">
             <summary>
-            使用WebRequest
+            使用WebRequest請求(.Net 4.0)
             </summary>
         </member>
-        <member name="M:WebHttpClient.Client.GetResponse(System.String,System.String,System.Byte[],System.String@,System.Boolean,System.Net.ICredentials,System.Int32,System.String)">
+        <member name="M:WebHttpClient.Client.GetResponse(System.String,System.String,System.Byte[],System.String@,System.Net.ICredentials,System.Int32,System.Collections.Specialized.NameValueCollection,System.Boolean,System.String)">
             <summary>
-            設定Uri,與資料並送出Request後等待Response
+            使用WebRequest發送請求並取得Response(有網站認證介面與Proxy的Uri設定)
             </summary>
-            <param name="uriString">目的地Uri</param>
+            <param name="uriString">目的地Uri字串</param>
             <param name="method">Get/Post</param>
             <param name="sendData">null(Get)/bytes(Post)</param>
             <param name="errorMsg">異常輸出(default:"")</param>
             <param name="debugDisplay"></param>
             <param name="credential">認證用(default:null)</param>
-            <param name="timeOut">要求逾時</param>
+            <param name="timeOut">請求的回應逾時(ms)</param>
             <param name="proxyString"></param>
-            <returns>回應資料(Byte Array)</returns>
+            <param name="requestHeaders">新增請求Header資料</param>
+            <returns>Response回應資料(Byte Array)</returns>
         </member>
-        <member name="M:WebHttpClient.Client.CreateWebRequest(System.String,System.Int32,System.Net.ICredentials,System.String)">
+        <member name="M:WebHttpClient.Client.GetResponse(System.String,System.String,System.String@,System.Int32,System.Collections.Specialized.NameValueCollection,System.Byte[])">
+            <summary>
+            使用WebRequest發送請求並取得Response
+            </summary>
+            <param name="uriString">目的地Uri字串</param>
+            <param name="method">GET/POST</param>
+            <param name="errorMsg">異常訊息(default:"")</param>
+            <param name="timeOut">請求的回應逾時(ms)</param>
+            <param name="requestHeaders">要新增的Request Header</param>
+            <param name="sendData">送出的請求參數數據</param>
+            <returns>response content data</returns>
+        </member>
+        <member name="M:WebHttpClient.Client.CreateWebRequest(System.String,System.Int32)">
             <summary>
             Create WebRequest by UriString and set timeout(ms), credential, proxy
             </summary>
@@ -33,13 +46,30 @@
             <param name="proxyString">代理(如果有)</param>
             <returns>WebRequest Object</returns>
         </member>
-        <member name="M:WebHttpClient.Client.SetReuqestData(System.Net.WebRequest,System.String,System.Byte[])">
+        <member name="M:WebHttpClient.Client.SetCredentialAndProxy(System.Net.WebRequest,System.Net.ICredentials,System.String)">
+            <summary>
+            設定認證與代理
+            </summary>
+            <param name="request">請求</param>
+            <param name="credential">認證介面</param>
+            <param name="proxyString">代理UriString</param>
+        </member>
+        <member name="M:WebHttpClient.Client.SetReuqestHeaders(System.Net.WebRequest,System.String,System.Collections.Specialized.NameValueCollection)">
             <summary>
             Setting WebRequest Medthod, ContentType, ContentLength, UserAgent, 
             </summary>
             <param name="request"></param>
             <param name="method"></param>
             <param name="sendData"></param>
+        </member>
+        <member name="M:WebHttpClient.Client.WriteRequestData(System.Net.WebRequest,System.Byte[],System.String@)">
+            <summary>
+            Request data write to Stream
+            </summary>
+            <param name="request">請求</param>
+            <param name="requestData">請求的參數資料</param>
+            <param name="errMsg">異常訊息(default:"")</param>
+            <returns>請求寫入成功/失敗</returns>
         </member>
         <member name="M:WebHttpClient.Client.ReflectionAllPropertyValue(System.Object)">
             <summary>

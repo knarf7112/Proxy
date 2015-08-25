@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 //
 using Common.Logging;
@@ -9,7 +7,6 @@ using ALCommon;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using System.IO;
-using System.Configuration;
 
 namespace Proxy
 {
@@ -66,10 +63,10 @@ namespace Proxy
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            log.Debug("[Txlog][UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent);
+            log.Debug("[AutoLoadTxLog][UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent);
             // 1. get request dat from input stream by ASCII
             string inputData = GetStringFromInputStream(context, Encoding.ASCII);
-            log.Debug("[Txlog Request] Data(length:" + inputData.Length + "):" + inputData);
+            log.Debug("[AutoLoadTxLog Request] Data(length:" + inputData.Length + "):" + inputData);
 
             // 2. Parseing request Data to request POCO
             request = ParseRequestString(inputData);
@@ -96,7 +93,7 @@ namespace Proxy
                     responseString = GetResponseFailString(inputData);
                 }
                 // 6. Response Data
-                log.Debug("[Txlog Response] Data(length:" + responseString.Length + "):" + responseString);
+                log.Debug("[AutoLoadTxLog Response] Data(length:" + responseString.Length + "):" + responseString);
                 responseBytes = Encoding.ASCII.GetBytes(responseString);
                 context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return 
             }
@@ -110,7 +107,7 @@ namespace Proxy
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
             //context.Response.Close();//異常:會產生2~3個request進入並且無法正常獲得Response
-            log.Debug("[Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
+            log.Debug("[AutoLoadTxLog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
             context.ApplicationInstance.CompleteRequest();
         }
 
@@ -121,7 +118,7 @@ namespace Proxy
         /// <returns>要沖正/不沖正</returns>
         private bool HasReversal(ALTxlog_Domain request)
         {
-            //依據文件 iCash2@iBon_Format_20150810.xlsx
+            //依據文件 iCash2@iBon_Format_20150820(內部使用).xlsx
             string returnCode = request.TXLOG.Substring(16, 8);//直接取TxLog(length:288)內的ReturnCode欄位資料
             string trans_Type = request.TXLOG.Substring(0, 2); //"74" or "75"
             log.Debug(m => { m.Invoke("卡機回傳的ReturnCode:" + returnCode + " 交易類型:" + trans_Type); });
@@ -147,15 +144,15 @@ namespace Proxy
         {
             ALTxlog_Domain toAPObject = null;
 
-            //文件格式參考: iCash2@iBon_Format_20150810.xlsx
+            //文件格式參考: iCash2@iBon_Format_20150820(內部使用).xlsx
             if (request.Length != TxlogLength)
             {
-                log.Debug("[Txlog]Request字串長度不符:" + request.Length);
+                log.Debug("[AutoLoadTxLog]Request字串長度不符:" + request.Length);
                 return null;
             }
             else if (!request.Substring(0, 4).Equals(Request_Com_Type))
             {
-                log.Debug("[Txlog]Request通訊種別不符:" + request.Substring(0, 4));
+                log.Debug("[AutoLoadTxLog]Request通訊種別不符:" + request.Substring(0, 4));
                 return null;
             }
 
@@ -175,7 +172,7 @@ namespace Proxy
             }
             catch (Exception ex)
             {
-                log.Error("轉換[Txlog]Request物件失敗:" + ex.StackTrace);
+                log.Error("[AutoLoadTxLog]轉換Request物件失敗:" + ex.StackTrace);
             }
             return toAPObject;
         }
@@ -190,12 +187,9 @@ namespace Proxy
         /// <returns>成功out出response字串/失敗out null</returns>
         private bool ParseResponseString(ALTxlog_Domain request, ALTxlog_Domain response, string requestString, out string responseString)
         {
-            if (request.COM_TYPE == response.COM_TYPE &&
-                request.POS_SEQNO == response.POS_SEQNO &&
-                //request.AL_TRANSTIME == response.AL_TRANSTIME && //因後台AP沒回傳交易時間所以不能比對
-                request.STORE_NO == response.STORE_NO)
+            if (!String.IsNullOrEmpty(response.TXLOG_RC))
             {
-                //依文件規格 iCash2@iBon_Format_20150810.xlsx
+                //依文件規格 iCash2@iBon_Format_20150820(內部使用).xlsx
                 //Request部份資料混合Response資料(只改通訊種別,中心端回應碼)
                 responseString = Response_Com_Type +                //0~3 //Com_Type : 0642
                                  requestString.Substring(4, 40) +   //4~43
@@ -267,7 +261,7 @@ namespace Proxy
                     {
                         //UTF8(JSON(POCO))=>byte array and send to AP
                         requestStr = JsonConvert.SerializeObject(request);
-                        log.Debug("Request JsonString:" + requestStr);
+                        log.Debug(m => m("[AutoLoadTxLog]Request JsonString({0}): {1}", serverConfig, requestStr));
                         requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
                         responseBytes = connectToAP.SendAndReceive(requestBytes);
                         if (responseBytes != null)
@@ -275,7 +269,7 @@ namespace Proxy
                             responseString = Encoding.UTF8.GetString(responseBytes);
                             response = JsonConvert.DeserializeObject<ALTxlog_Domain>(responseString);
                         }
-                        log.Debug(m => { m.Invoke("Response JsonString:" + ((responseBytes == null) ? "null" : responseString)); });
+                        log.Debug(m => { m.Invoke("[AutoLoadTxLog]Response JsonString: {0}", ((responseBytes == null) ? "null" : responseString)); });
                     }
                 }
             }

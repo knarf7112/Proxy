@@ -1,64 +1,65 @@
-﻿<%@ WebHandler Language="C#" Class="CardLockHandler" %>
+﻿<%@ WebHandler Language="C#" Class="CompanyAutoLoadHandler" %>
 
 using System;
 using System.Web;
 //
-using Proxy;
 using Common.Logging;
-using System.IO;
-using System.Text;
-using ALCommon;
 using System.Diagnostics;
+using System.Text;
+using Proxy;
 using Newtonsoft.Json;
-using WebHttpClient;
+using System.IO;
+//using ALCommon;
 using IBON_TRADE_MANAGER_Lib;
+using WebHttpClient;
 using System.Collections.Specialized;
 
-public class CardLockHandler : IHttpHandler
-{
-    private static readonly ILog log = LogManager.GetLogger(typeof(CardLockHandler));
+public class CompanyAutoLoadHandler : IHttpHandler {
 
+    private static readonly ILog log = LogManager.GetLogger(typeof(CompanyAutoLoadHandler));
     /// <summary>
-    /// 要從web config檔內讀取的資料名稱(鎖卡TxLog要回傳的後台Uri)
+    /// 要從web config檔內讀取的資料名稱
     /// </summary>
-    private static readonly string ServiceName = "CardLockService";
+    private static readonly string ServiceName = "CompanyAutoLoadService";
     /// <summary>
-    /// 規格指定的電文長度
+    /// used to lock dicApConfig
     /// </summary>
-    private static readonly int TxlogLength = 397;
+    private static object lockObj = new object();
     /// <summary>
     /// 此服務的請求電文通訊種別(4 bytes)
     /// </summary>
-    private static readonly string Request_Com_Type = "2641";
+    private static readonly string Request_Com_Type = "0335";
     /// <summary>
     /// 此服務的回應電文通訊種別(4 bytes)
     /// </summary>
-    private static readonly string Response_Com_Type = "2642";
+    private static readonly string Response_Com_Type = "0336";
+    /// <summary>
+    /// 自動加值電文長度
+    /// </summary>
+    private static readonly int CompanyAutoLoadLength = 128;
     /// <summary>
     /// 通用後台AP錯誤Return Code(6 bytes)
     /// </summary>
     private static readonly string Response_Generic_Error_ReturnCode = "990001";
-    
-    
+
     /// <summary>
     /// Request in
     /// </summary>
-    /// <param name="context"></param>
-    public void ProcessRequest (HttpContext context) 
+    /// <param name="context">HttpContext</param>
+    public void ProcessRequest(HttpContext context)
     {
-        
         string responseString = null;
         byte[] responseBytes = null;
-        TOL_Soc_Req request = null;
-        TOL_Soc_Req response = null;
-        Stopwatch timer = new Stopwatch();
+        CLOL_Soc_Req request = null;
+        CLOL_Soc_Req response = null;
+        Stopwatch timer = new System.Diagnostics.Stopwatch();
         timer.Start();
         
-        log.Info(m => { m.Invoke("[鎖卡Txlog][UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent); });
+        log.Debug("[企業AutoLoad][UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent);
         // 1. get request dat from input stream by ASCII
         string inputData = GetStringFromInputStream(context, Encoding.ASCII);
-        log.Debug("[鎖卡Txlog Request] Data(length:" + inputData.Length + "):" + inputData);
-
+        log.Debug("[企業AutoLoad Request] Data(length:" + inputData.Length + "):" + inputData);
+        
         // 2. Parseing request Data to request POCO
         request = ParseRequestString(inputData);
 
@@ -66,17 +67,17 @@ public class CardLockHandler : IHttpHandler
         context.Response.StatusCode = 200;
         if (request != null)
         {
-            // 3. Connect Reversal TxLog Service and Send TxLog POCO then Response TxLog POCO
+            // 3. Connect Center AP and Send Request POCO then get response POCO
             response = SendAndReceiveFromAP(request, ServiceName);
-            
             // 4. 若後端AP回應或轉換比對Request和Response有問題時
             if (response == null || !ParseResponseString(request, response, inputData, out responseString))
             {
+                log.Debug(m => m("後端回應:{0}", (response == null).ToString()));
                 //後端無回應(後端異常)
                 responseString = GetResponseFailString(inputData);
             }
             // 5. Response Data
-            log.Debug("[鎖卡Txlog Response] Data(length:" + responseString.Length + "):" + responseString);
+            log.Debug("[企業AutoLoad Response] Data(length:" + responseString.Length + "):" + responseString);
             responseBytes = Encoding.ASCII.GetBytes(responseString);
             context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return 
         }
@@ -84,38 +85,46 @@ public class CardLockHandler : IHttpHandler
         {
             //request not defined format
             log.Debug("Request Error");
+            //context.Response.ContentType = "text/html";
+            //context.Response.Write("<script>alert('Request Error');</script>");
             context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);
         }
         timer.Start();
+        log.Debug("[企業AutoLoad]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
         context.Response.OutputStream.Flush();
         context.Response.OutputStream.Close();
-        log.Debug("[鎖卡Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
-        context.ApplicationInstance.CompleteRequest();
+        //context.Response.End();//此段會造成以下的Statement不執行
+        context.ApplicationInstance.CompleteRequest();//引發EndRequest事件來結束連線
     }
- 
-    public bool IsReusable {
-        get {
-            return false;
-        }
+
+    /// <summary>
+    /// 企業自動加值後端異常回應通用格式
+    /// </summary>
+    /// <param name="inputData">Reqeust 電文</param>
+    /// <returns>異常回應通用格式</returns>
+    private string GetResponseFailString(string inputData)
+    {
+        //Com_Type + 原始電文 + Return Code + 原始電文(128 bytes)
+        string responseString = Response_Com_Type + inputData.Substring(4, 40) + Response_Generic_Error_ReturnCode + inputData.Substring(50, 78);
+
+        return responseString;
     }
 
     /// <summary>
     /// Send Reuqest POCO to Center AP and receive response POCO
     /// </summary>
-    /// <param name="request">自動加值請求物件</param>
-    /// <returns>自動加值回應物件</returns>
-    private TOL_Soc_Req SendAndReceiveFromAP(TOL_Soc_Req request, string serviceName)
+    /// <param name="request">Company自動加值請求物件</param>
+    /// <returns>Company自動加值回應物件</returns>
+    private CLOL_Soc_Req SendAndReceiveFromAP(CLOL_Soc_Req request, string serviceName)
     {
-        TOL_Soc_Req response = null;
+        CLOL_Soc_Req response = null;
         string requestStr = null;
         byte[] requestBytes = null;
         string responseString = null;
         byte[] responseBytes = null;
-        string serverUri = null; 
+        string serverUri = null;
         string errMsg = null;
         NameValueCollection headers = null;
-        //string fixedRequestStr = null;
-        //string fixedresponseStr = null;
         //*********************************
         //取得連線後台的WebConfig設定資料
         serverUri = ConfigGetter.GetValue(serviceName);
@@ -128,26 +137,25 @@ public class CardLockHandler : IHttpHandler
         //*********************************
         try
         {
-             //UTF8(JSON(POCO))=>byte array and send to AP
+            //UTF8(JSON(POCO))=>byte array and send to AP
             requestStr = JsonConvert.SerializeObject(request);
-            requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
-            //fixedRequestStr = requestStr.Replace("{", "{{").Replace("}", "}}");//修正log4net的JSON轉換問題 //ref:http://chwilliamson.me.uk/article/CommonLoggingTraceListener-to-Log4Net-FormatException
-            log.Debug(m => m("[鎖卡Txlog]開始送出Request : Uri({0}) data: {1}", serverUri, requestStr));
+            requestBytes = Encoding.UTF8.GetBytes(requestStr);//WebAPI service used UTF8
+
+            log.Debug(m => m("[企業AutoLoad]開始送出Request : Uri({0}) data: {1}", serverUri, requestStr));
             headers = new NameValueCollection();
             headers.Add("Content-Type", "application/json");//因應後台WebAPI服務格式要求
-            //
             responseBytes = Client.GetResponse(serverUri, "POST", out errMsg, 10000, headers, requestBytes);
             if (responseBytes != null)
             {
                 responseString = Encoding.UTF8.GetString(responseBytes);
-                log.Debug(m => m("[鎖卡Txlog]Response JsonString: {0}", responseString));
-                response = JsonConvert.DeserializeObject<TOL_Soc_Req>(responseString);
+                log.Debug(m => m("[企業AutoLoad]Response JsonString:{0}", responseString));
+                response = JsonConvert.DeserializeObject<CLOL_Soc_Req>(responseString);
             }
             else
             {
                 log.Error(m => { m.Invoke("取得回應異常: {0}", errMsg); });
-            } 
-            
+            }
+
         }
         catch (Exception ex)
         {
@@ -155,48 +163,53 @@ public class CardLockHandler : IHttpHandler
         }
         return response;
     }
-    
-    
+
     /// <summary>
-    /// 鎖卡Txlog請求電文字串轉自動加值Txlog請求物件(要傳給後端AP用的)
+    /// Company自動加值請求電文字串轉自動加值請求物件(要傳給後端AP用的)
     /// </summary>
-    /// <param name="request">自動加值Txlog請求電文字串(ASCII)</param>
-    /// <returns>自動加值Txlog請求物件</returns>
-    private TOL_Soc_Req ParseRequestString(string request)
+    /// <param name="request">Company自動加值請求電文字串(ASCII)</param>
+    /// <returns>Company自動加值請求物件</returns>
+    private CLOL_Soc_Req ParseRequestString(string request)
     {
-        TOL_Soc_Req toAPObject = null;
+        CLOL_Soc_Req toAPObject = null;
 
         //文件格式參考: iCash2@iBon_Format_20150820(內部使用).xlsx
-        if (request.Length != TxlogLength)
+        if (request.Length != CompanyAutoLoadLength)
         {
-            log.Debug("[鎖卡Txlog]Request字串長度不符:" + request.Length);
+            log.Debug("[企業AutoLoad]Request字串長度不符:" + request.Length);
             return null;
         }
         else if (!request.Substring(0, 4).Equals(Request_Com_Type))
         {
-            log.Debug("[鎖卡Txlog]Request通訊種別不符:" + request.Substring(0, 4));
+            log.Debug("[企業AutoLoad]Request通訊種別不符:" + request.Substring(0, 4));
             return null;
         }
 
         try
         {
-            toAPObject = new TOL_Soc_Req
+            toAPObject = new CLOL_Soc_Req
             {
                 COM_TYPE = request.Substring(0, 4),                 //0~3     //0631:通訊種別
                 CHANNEL_TYPE = request.Substring(4, 3),             //4~6     //SET:通路別
                 STORE_NO = request.Substring(7, 8),                 //7~14    //01234567:店號
-                POS_REGNO = request.Substring(15, 3),               //15~17   //011:POS機編號
+                POS_REGNO = request.Substring(15, 3),               //15~17   //000:POS機編號
                 POS_SEQNO = request.Substring(18, 8),               //18~25   //12345678:Pos交易序號
-                CASHIER_NO = request.Substring(26, 4),              //26~29   //0000:收銀員編號
-                DATE_TIME = request.Substring(30, 14),              //30~43   //20150824165959:交易日期(yyyyMMddHHmmss)
+                CASHIER_NO = request.Substring(26, 4),              //26~29   //9999:收銀員編號
+                DATE_TIME = request.Substring(30, 14),              //30~43   //yyyyMMddHHmmss:交易日期
                 SW = request.Substring(44, 6),                      //44~49   //000000:中心端回應碼
-                TERMINAL_ID = request.Substring(50, 16),            //50~55   //Terminal ID
-                TxLog = request.Substring(66, 331)                  //66~396  //Txlog(包含Txlog的header + body:43 + 288 bytes)
+                TERMINAL_ID = request.Substring(50, 16),            //50~65   //8600000000000000:Terminal ID
+                SAM_TSN = request.Substring(66, 6),                 //66~71   //012345:端末交易序號
+                CARD_NO = request.Substring(72, 16),                //72~87   //5817000012345678:卡號
+                CARD_LSN = request.Substring(88, 8),                //88~95   //12345678:加值序號+1
+                AMOUNT = request.Substring(96, 8),                  //96~103  //00000500:交易金額
+                SN = request.Substring(104, 8),                     //104~111 //00000000:交易序號
+                MAC = request.Substring(112, 8),                    //112~119 //1A2B3C4D:交易驗證碼
+                ICC_BL = request.Substring(120, 8)                  //120~127 //卡片餘額
             };
         }
         catch (Exception ex)
         {
-            log.Error("[鎖卡Txlog]轉換Request物件失敗:" + ex.StackTrace);
+            log.Error("[企業AutoLoad]轉換Request物件失敗:" + ex.StackTrace);
         }
         return toAPObject;
     }
@@ -209,18 +222,20 @@ public class CardLockHandler : IHttpHandler
     /// <param name="requestString">RequestString</param>
     /// <param name="responseString"></param>
     /// <returns>成功out出response字串/失敗out null</returns>
-    private bool ParseResponseString(TOL_Soc_Req request, TOL_Soc_Req response, string requestString, out string responseString)
+    private bool ParseResponseString(CLOL_Soc_Req request, CLOL_Soc_Req response, string requestString, out string responseString)
     {
-        //if (request.COM_TYPE == response.COM_TYPE &&
-        //    request.POS_SEQNO == response.POS_SEQNO &&
-        //    request.STORE_NO == response.STORE_NO)
         if (!String.IsNullOrEmpty(response.SW))
         {
-            //依文件規格 iCash2@iBon_Format_20150820(內部使用).xlsx
-            //Request部份資料混合Response資料(只改通訊種別,中心端回應碼)
-            responseString = Response_Com_Type +                //0~3 //Com_Type : 0642
+            //依文件規格: iCash2@iBon_Format_20150820(內部使用).xlsx
+            //********************************************
+            //Request部份資料混合Response資料(只改通訊種別,中心端回應碼,交易序號)
+            responseString = Response_Com_Type +                //0~3 //Com_Type : 0632
                              requestString.Substring(4, 40) +   //4~43
-                             response.SW;                       //44~49
+                             response.SW +                      //44~49 //Return Code
+                             requestString.Substring(50, 46) +  //50~95
+                             response.AMOUNT.PadLeft(8, '0') +  //96~103 //交易金額
+                             response.SN.PadLeft(8, '0') +      //104~111
+                             requestString.Substring(112, 16);   //112~127
             return true;
         }
         else
@@ -230,19 +245,6 @@ public class CardLockHandler : IHttpHandler
         }
     }
 
-    /// <summary>
-    /// 鎖卡Txlog後端異常回應通用格式
-    /// </summary>
-    /// <param name="inputData">Reqeust 電文</param>
-    /// <returns>異常回應通用格式</returns>
-    private string GetResponseFailString(string inputData)
-    {
-        //Com_Type + 原始電文 + Return Code (4+40+6=50 bytes)
-        string responseString = Response_Com_Type + inputData.Substring(4, 40) + Response_Generic_Error_ReturnCode;
-        
-        return responseString;
-    }
-    
     /// <summary>
     /// Get request string from HttpContext Input Stream
     /// </summary>
@@ -277,10 +279,18 @@ public class CardLockHandler : IHttpHandler
     /// <returns>電文陣列(未編碼)</returns>
     private static byte[] GetBytesFromInputStream(HttpContext context)
     {
-        byte[] buffer = new byte[0x1000];//4k
+        byte[] buffer = new byte[0x1000];
         int readLength = context.Request.InputStream.Read(buffer, 0, buffer.Length);
         Array.Resize(ref buffer, readLength);
         return buffer;
+    }
+
+    public bool IsReusable
+    {
+        get
+        {
+            return false;
+        }
     }
 
 }
