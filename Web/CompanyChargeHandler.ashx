@@ -1,4 +1,4 @@
-﻿<%@ WebHandler Language="C#" Class="CompanyAutoLoadHandler" %>
+﻿<%@ WebHandler Language="C#" Class="CompanyChargeHandler" %>
 
 using System;
 using System.Web;
@@ -14,13 +14,14 @@ using IBON_TRADE_MANAGER_Lib;
 using WebHttpClient;
 using System.Collections.Specialized;
 
-public class CompanyAutoLoadHandler : IHttpHandler {
+public class CompanyChargeHandler : IHttpHandler
+{
 
-    private static readonly ILog log = LogManager.GetLogger(typeof(CompanyAutoLoadHandler));
+    private static readonly ILog log = LogManager.GetLogger(typeof(CompanyChargeHandler));
     /// <summary>
     /// 要從web config檔內讀取的資料名稱
     /// </summary>
-    private static readonly string ServiceName = "CompanyAutoLoadService";
+    private static readonly string ServiceName = "CompanyChargeService";
     /// <summary>
     /// used to lock dicApConfig
     /// </summary>

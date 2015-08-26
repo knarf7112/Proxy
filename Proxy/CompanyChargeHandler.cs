@@ -15,13 +15,13 @@ namespace Proxy
     /// <summary>
     /// 企業自動加值 handler
     /// </summary>
-    public class CompanyAutoLoadHandler : IHttpHandler
+    public class CompanyChargeHandler : IHttpHandler
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(CompanyAutoLoadHandler));
+        private static readonly ILog log = LogManager.GetLogger(typeof(CompanyChargeHandler));
         /// <summary>
         /// 要從web config檔內讀取的資料名稱
         /// </summary>
-        private static readonly string ServiceName = "CompanyAutoLoadService";
+        private static readonly string ServiceName = "CompanyChargeService";
         /// <summary>
         /// used to lock dicApConfig
         /// </summary>

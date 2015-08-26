@@ -15,14 +15,14 @@ namespace Proxy
     /// <summary>
     /// 企業自動加值TxLog Handler
     /// </summary>
-    public class CompanyAutoLoadTxLogHandler : IHttpHandler
+    public class CompanyChargeTxLogHandler : IHttpHandler
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(CompanyAutoLoadTxLogHandler));
+        private static readonly ILog log = LogManager.GetLogger(typeof(CompanyChargeTxLogHandler));
 
         /// <summary>
         /// 要從web config檔內讀取的資料名稱(鎖卡TxLog要回傳的後台Uri)
         /// </summary>
-        private static readonly string ServiceName = "CompanyTxLogService";
+        private static readonly string ServiceName = "CompanyChargeTxLogService";
         /// <summary>
         /// 規格指定的電文長度
         /// </summary>
