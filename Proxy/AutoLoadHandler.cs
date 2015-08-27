@@ -103,8 +103,8 @@ namespace Proxy
         /// <returns>異常回應通用格式</returns>
         private string GetResponseFailString(string inputData)
         {
-            //Com_Type + 原始電文 + Return Code + 原始電文(150 bytes)
-            string responseString = Response_Com_Type + inputData.Substring(4, 40) + Response_Generic_Error_ReturnCode + inputData.Substring(50, 100);
+            //Com_Type + 原始電文 + Return Code + 原始電文(164 bytes)
+            string responseString = Response_Com_Type + inputData.Substring(4, 40) + Response_Generic_Error_ReturnCode + inputData.Substring(50, 114);
 
             return responseString;
         }
