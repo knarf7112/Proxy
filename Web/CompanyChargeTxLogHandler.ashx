@@ -169,7 +169,7 @@ public class CompanyChargeTxLogHandler : IHttpHandler
     {
         TOL_Soc_Req toAPObject = null;
 
-        //文件格式參考: iCash2@iBon_Format_20150820(內部使用).xlsx
+        //文件格式參考: iCash2@iBon_Format_20150826(內部使用).xlsx
         if (request.Length != TxlogLength)
         {
             log.Debug("[CompanyTxlog]Request字串長度不符:" + request.Length);
@@ -219,7 +219,7 @@ public class CompanyChargeTxLogHandler : IHttpHandler
         //    request.STORE_NO == response.STORE_NO)
         if (!String.IsNullOrEmpty(response.SW))
         {
-            //依文件規格 iCash2@iBon_Format_20150820(內部使用).xlsx
+            //依文件規格 iCash2@iBon_Format_20150826(內部使用).xlsx
             //Request部份資料混合Response資料(只改通訊種別,中心端回應碼)
             responseString = Response_Com_Type +                //0~3 //Com_Type : 0642
                              requestString.Substring(4, 40) +   //4~43

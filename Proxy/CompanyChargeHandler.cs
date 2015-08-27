@@ -37,7 +37,7 @@ namespace Proxy
         /// <summary>
         /// 自動加值電文長度
         /// </summary>
-        private static readonly int CompanyAutoLoadLength = 128;
+        private static readonly int CompanyAutoLoadLength = 142;
         /// <summary>
         /// 通用後台AP錯誤Return Code(6 bytes)
         /// </summary>
@@ -174,7 +174,7 @@ namespace Proxy
         {
             CLOL_Soc_Req toAPObject = null;
 
-            //文件格式參考: iCash2@iBon_Format_20150820(內部使用).xlsx
+            //文件格式參考: iCash2@iBon_Format_20150826(內部使用).xlsx
             if (request.Length != CompanyAutoLoadLength)
             {
                 log.Debug("[企業AutoLoad]Request字串長度不符:" + request.Length);
@@ -205,7 +205,8 @@ namespace Proxy
                     AMOUNT = request.Substring(96, 8),                  //96~103  //00000500:交易金額
                     SN = request.Substring(104, 8),                     //104~111 //00000000:交易序號
                     MAC = request.Substring(112, 8),                    //112~119 //1A2B3C4D:交易驗證碼
-                    ICC_BL = request.Substring(120, 8)                  //120~127 //卡片餘額
+                    ICC_BL = request.Substring(120, 8),                 //120~127 //卡片餘額
+                    SAM_OSN = request.Substring(128, 14)                //128~141 //00000000000000:端末序號: IBON00000000(12)+中心端取號(2) //2015-08-27 新增
                 };
             }
             catch (Exception ex)
@@ -227,16 +228,19 @@ namespace Proxy
         {
             if (!String.IsNullOrEmpty(response.SW))
             {
-                //依文件規格: iCash2@iBon_Format_20150820(內部使用).xlsx
+                //依文件規格: iCash2@iBon_Format_20150826(內部使用).xlsx
                 //********************************************
-                //Request部份資料混合Response資料(只改通訊種別,中心端回應碼,交易序號)
-                responseString = Response_Com_Type +                //0~3 //Com_Type : 0632
+                //Request部份資料混合Response資料(只改通訊種別,中心端回應碼,端末交易序號,交易金額,交易序號,端末序號)
+                responseString = Response_Com_Type +                //0~3       //Com_Type : 0632
                                  requestString.Substring(4, 40) +   //4~43
-                                 response.SW +                      //44~49 //Return Code
-                                 requestString.Substring(50, 46) +  //50~95
-                                 response.AMOUNT.PadLeft(8, '0') +  //96~103 //交易金額
-                                 response.SN.PadLeft(8, '0') +      //104~111
-                                 requestString.Substring(112, 16);   //112~127
+                                 response.SW +                      //44~49     //Return Code
+                                 requestString.Substring(50, 16) +  //50~65
+                                 response.SAM_TSN +                 //66~71     //端末交易序號
+                                 requestString.Substring(72, 24) +  //72~95
+                                 response.AMOUNT.PadLeft(8, '0') +  //96~103    //交易金額
+                                 response.SN.PadLeft(8, '0') +      //104~111   //交易序號
+                                 requestString.Substring(112, 16) + //112~127
+                                 response.SAM_OSN;                  //128~141   //端末序號: IBON00000000(12)+中心端取號(2) //2015-08-27 新增
                 return true;
             }
             else

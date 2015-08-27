@@ -118,7 +118,7 @@ namespace Proxy
         /// <returns>要沖正/不沖正</returns>
         private bool HasReversal(ALTxlog_Domain request)
         {
-            //依據文件 iCash2@iBon_Format_20150820(內部使用).xlsx
+            //依據文件 iCash2@iBon_Format_20150826(內部使用).xlsx
             string returnCode = request.TXLOG.Substring(16, 8);//直接取TxLog(length:288)內的ReturnCode欄位資料
             string trans_Type = request.TXLOG.Substring(0, 2); //"74" or "75"
             log.Debug(m => { m.Invoke("卡機回傳的ReturnCode:" + returnCode + " 交易類型:" + trans_Type); });
@@ -144,7 +144,7 @@ namespace Proxy
         {
             ALTxlog_Domain toAPObject = null;
 
-            //文件格式參考: iCash2@iBon_Format_20150820(內部使用).xlsx
+            //文件格式參考: iCash2@iBon_Format_20150826(內部使用).xlsx
             if (request.Length != TxlogLength)
             {
                 log.Debug("[AutoLoadTxLog]Request字串長度不符:" + request.Length);
@@ -189,7 +189,7 @@ namespace Proxy
         {
             if (!String.IsNullOrEmpty(response.TXLOG_RC))
             {
-                //依文件規格 iCash2@iBon_Format_20150820(內部使用).xlsx
+                //依文件規格 iCash2@iBon_Format_20150826(內部使用).xlsx
                 //Request部份資料混合Response資料(只改通訊種別,中心端回應碼)
                 responseString = Response_Com_Type +                //0~3 //Com_Type : 0642
                                  requestString.Substring(4, 40) +   //4~43
