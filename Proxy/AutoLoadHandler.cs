@@ -211,7 +211,7 @@ namespace Proxy
                     AL2POS_SN = request.Substring(120, 8),              //120~127 //00000000:交易序號
                     AL_RRN = request.Substring(136, 12),                //136~147 //5+365+00+123456:RRN
                     AL_ENABLE = request.Substring(149, 1),              //149~149 // " " or "N" : 卡片自動加值啟用代碼 
-                    SAM_OSN = request.Substring(150, 14),               //150~163 //端末序號:IBON00000000(12) + 中心端取號(2)  
+                    SAM_OSN = request.Substring(150, 14)                //150~163 //端末序號:IBON00000000(12) + 中心端取號(2) //2015-08-27 修正
                 };
             }
             catch (Exception ex)
@@ -254,17 +254,17 @@ namespace Proxy
                 //                 requestString.Substring(128, 20);  //128~147
                 //********************************************
                 //Request部份資料混合Response資料(只改通訊種別,中心端回應碼,交易序號,RRN,虛擬SAM_TSN,虛擬Sam_OSN)
-                responseString = Response_Com_Type +                //0~3      //Com_Type : 0632
-                                 requestString.Substring(4, 40) +   //4~43
-                                 response.AL2POS_RC +               //44~49    //Return Code: 6 bytes
-                                 requestString.Substring(50, 16) +  //50~65
-                                 response.SAM_TSN +                 //66~71    //SAM_TSN: 6 bytes
-                                 requestString.Substring(72, 48) +  //72~119
-                                 response.AL2POS_SN.PadLeft(8, '0') +//120~127 //交易序號: 8 bytes
-                                 requestString.Substring(128, 8) +  //128~135  
-                                 response.AL_RRN +                  //136~147  //RRN: 12 bytes
-                                 requestString.Substring(148, 2) +  //148~149
-                                 response.SAM_OSN;                  //150~163  //Sam_OSN: 14 bytes
+                responseString = Response_Com_Type +                                    //0~3      //Com_Type : 0632
+                                 requestString.Substring(4, 40) +                       //4~43
+                                 response.AL2POS_RC +                                   //44~49    //Return Code: 6 bytes
+                                 (requestString.Substring(50, 2) + response.SAM_OSN) +  //50~65    //"16" + Sam_OSN(14 bytes)
+                                 response.SAM_TSN +                                     //66~71    //SAM_TSN: 6 bytes
+                                 requestString.Substring(72, 48) +                      //72~119
+                                 response.AL2POS_SN.PadLeft(8, '0') +                   //120~127  //交易序號: 8 bytes
+                                 requestString.Substring(128, 8) +                      //128~135  
+                                 response.AL_RRN +                                      //136~147  //RRN: 12 bytes
+                                 requestString.Substring(148, 2) +                      //148~149
+                                 response.SAM_OSN;                                      //150~163  //Sam_OSN: 14 bytes
                 return true;
             }
             else

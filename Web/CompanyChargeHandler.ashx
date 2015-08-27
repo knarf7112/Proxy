@@ -230,17 +230,17 @@ public class CompanyChargeHandler : IHttpHandler
         {
             //依文件規格: iCash2@iBon_Format_20150826(內部使用).xlsx
             //********************************************
-            //Request部份資料混合Response資料(只改通訊種別,中心端回應碼,端末交易序號,交易金額,交易序號,端末序號)
-            responseString = Response_Com_Type +                //0~3       //Com_Type : 0632
-                             requestString.Substring(4, 40) +   //4~43
-                             response.SW +                      //44~49     //Return Code
-                             requestString.Substring(50, 16) +  //50~65
-                             response.SAM_TSN +                 //66~71     //端末交易序號
-                             requestString.Substring(72, 24) +  //72~95
-                             response.AMOUNT.PadLeft(8, '0') +  //96~103    //交易金額
-                             response.SN.PadLeft(8, '0') +      //104~111   //交易序號
-                             requestString.Substring(112, 16) + //112~127
-                             response.SAM_OSN;                  //128~141   //端末序號: IBON00000000(12)+中心端取號(2) //2015-08-27 新增
+            //Request部份資料混合Response資料(只改通訊種別,中心端回應碼,TerminalID,端末交易序號,交易金額,交易序號,端末序號)
+            responseString = Response_Com_Type +                                    //0~3       //Com_Type : 0632
+                             requestString.Substring(4, 40) +                       //4~43
+                             response.SW +                                          //44~49     //Return Code
+                             (requestString.Substring(50, 2) + response.SAM_OSN) +  //50~65    //"16" + Sam_OSN(14 bytes)
+                             response.SAM_TSN +                                     //66~71     //端末交易序號
+                             requestString.Substring(72, 24) +                      //72~95
+                             response.AMOUNT.PadLeft(8, '0') +                      //96~103    //交易金額
+                             response.SN.PadLeft(8, '0') +                          //104~111   //交易序號
+                             requestString.Substring(112, 16) +                     //112~127
+                             response.SAM_OSN;                                      //128~141   //端末序號: IBON00000000(12)+中心端取號(2) //2015-08-27 新增
             return true;
         }
         else
