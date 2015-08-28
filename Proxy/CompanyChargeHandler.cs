@@ -192,8 +192,8 @@ namespace Proxy
                 {
                     COM_TYPE = request.Substring(0, 4),                 //0~3     //0631:通訊種別
                     CHANNEL_TYPE = request.Substring(4, 3),             //4~6     //SET:通路別
-                    STORE_NO = request.Substring(7, 8),                 //7~14    //01234567:店號
-                    POS_REGNO = request.Substring(15, 3),               //15~17   //000:POS機編號
+                    STORE_NO = request.Substring(7, 8).Remove(0, 2),    //9~14    //123456:店號  //8碼取尾6碼
+                    POS_REGNO = request.Substring(15, 3).Remove(0, 1),  //16~17   //11:POS機編號 //3碼取尾2碼
                     POS_SEQNO = request.Substring(18, 8),               //18~25   //12345678:Pos交易序號
                     CASHIER_NO = request.Substring(26, 4),              //26~29   //9999:收銀員編號
                     DATE_TIME = request.Substring(30, 14),              //30~43   //yyyyMMddHHmmss:交易日期
