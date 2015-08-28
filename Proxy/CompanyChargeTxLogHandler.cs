@@ -55,10 +55,10 @@ namespace Proxy
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            log.Info(m => { m.Invoke("[CompanyTxlog][UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent); });
+            log.Info(m => { m.Invoke("[企業加值Txlog][UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent); });
             // 1. get request dat from input stream by ASCII
             string inputData = GetStringFromInputStream(context, Encoding.ASCII);
-            log.Debug("[CompanyTxlog Request] Data(length:" + inputData.Length + "):" + inputData);
+            log.Debug("[企業加值Txlog Request] Data(length:" + inputData.Length + "):" + inputData);
 
             // 2. Parseing request Data to request POCO
             request = ParseRequestString(inputData);
@@ -77,7 +77,7 @@ namespace Proxy
                     responseString = GetResponseFailString(inputData);
                 }
                 // 5. Response Data
-                log.Debug("[CompanyTxlog Response] Data(length:" + responseString.Length + "):" + responseString);
+                log.Debug("[企業加值Txlog Response] Data(length:" + responseString.Length + "):" + responseString);
                 responseBytes = Encoding.ASCII.GetBytes(responseString);
                 context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return 
             }
@@ -90,7 +90,7 @@ namespace Proxy
             timer.Start();
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
-            log.Debug("[CompanyTxlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
+            log.Debug("[企業加值Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
             context.ApplicationInstance.CompleteRequest();
         }
 
@@ -135,7 +135,7 @@ namespace Proxy
                 requestStr = JsonConvert.SerializeObject(request);
                 requestBytes = Encoding.UTF8.GetBytes(requestStr);//Center AP used UTF8
                 //fixedRequestStr = requestStr.Replace("{", "{{").Replace("}", "}}");//修正log4net的JSON轉換問題 //ref:http://chwilliamson.me.uk/article/CommonLoggingTraceListener-to-Log4Net-FormatException
-                log.Debug(m => m("[CompanyTxLog]開始送出Request : Uri({0}) data: {1}", serverUri, requestStr));
+                log.Debug(m => m("[企業加值Txlog]開始送出Request : Uri({0}) data: {1}", serverUri, requestStr));
                 headers = new NameValueCollection();
                 headers.Add("Content-Type", "application/json");//因應後台WebAPI服務格式要求
                 //送出Request請求與請求數據並等待回應數據
@@ -143,7 +143,7 @@ namespace Proxy
                 if (responseBytes != null)
                 {
                     responseString = Encoding.UTF8.GetString(responseBytes);
-                    log.Debug(m => m("[CompanyTxLog]Response JsonString: {0}", responseString));
+                    log.Debug(m => m("[企業加值Txlog]Response JsonString: {0}", responseString));
                     response = JsonConvert.DeserializeObject<TOL_Soc_Req>(responseString);
                 }
                 else
@@ -154,7 +154,7 @@ namespace Proxy
             }
             catch (Exception ex)
             {
-                log.Error("[SendAndReceiveFromAP] Error:" + ex.Message + ex.StackTrace);
+                log.Error("[SendAndReceiveFromAP] Error:" + ex.Message + "\n " + ex.StackTrace);
             }
             return response;
         }
@@ -172,12 +172,12 @@ namespace Proxy
             //文件格式參考: iCash2@iBon_Format_20150826(內部使用).xlsx
             if (request.Length != TxlogLength)
             {
-                log.Debug("[CompanyTxlog]Request字串長度不符:" + request.Length);
+                log.Debug("[企業加值Txlog]Request字串長度不符:" + request.Length);
                 return null;
             }
             else if (!request.Substring(0, 4).Equals(Request_Com_Type))
             {
-                log.Debug("[CompanyTxlog]Request通訊種別不符:" + request.Substring(0, 4));
+                log.Debug("[企業加值Txlog]Request通訊種別不符:" + request.Substring(0, 4));
                 return null;
             }
 
@@ -199,7 +199,7 @@ namespace Proxy
             }
             catch (Exception ex)
             {
-                log.Error("[CompanyTxlog]轉換Request物件失敗:" + ex.StackTrace);
+                log.Error("[企業加值Txlog]轉換Request物件失敗:" + ex.Message + "\n " + ex.StackTrace);
             }
             return toAPObject;
         }
@@ -234,7 +234,7 @@ namespace Proxy
         }
 
         /// <summary>
-        /// CompanyTxlog後端異常回應通用格式
+        /// 企業加值Txlog後端異常回應通用格式
         /// </summary>
         /// <param name="inputData">Reqeust 電文</param>
         /// <returns>異常回應通用格式</returns>

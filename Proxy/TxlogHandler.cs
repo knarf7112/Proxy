@@ -172,7 +172,7 @@ namespace Proxy
             }
             catch (Exception ex)
             {
-                log.Error("[AutoLoadTxLog]轉換Request物件失敗:" + ex.StackTrace);
+                log.Error("[AutoLoadTxLog]轉換Request物件失敗:" + ex.Message + "\n " + ex.StackTrace);
             }
             return toAPObject;
         }
@@ -275,7 +275,7 @@ namespace Proxy
             }
             catch (Exception ex)
             {
-                log.Error("後台連線異常:" + ex.StackTrace);
+                log.Error(m => m("後台({0})連線異常:{1}", serverConfig, ex.Message));
             }
             return response;
         }

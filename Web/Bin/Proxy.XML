@@ -228,7 +228,7 @@
         </member>
         <member name="T:Proxy.CardValidationHandler">
             <summary>
-            檢核卡號有效性,連到AP的檢查服務6103
+            檢核卡號有效性,連到AP的檢查服務6103(未完成)
             </summary>
         </member>
         <member name="M:Proxy.CardValidationHandler.CheckCard(System.String,System.String,System.Int32)">
@@ -240,6 +240,11 @@
             <param name="ip"></param>
             <param name="port"></param>
             <returns>Return Code(若傳輸異常回傳null)</returns>
+        </member>
+        <member name="T:Proxy.CheckTimeHandler">
+            <summary>
+            未完成
+            </summary>
         </member>
         <member name="T:Proxy.CompanyChargeHandler">
             <summary>
@@ -396,7 +401,7 @@
         </member>
         <member name="M:Proxy.CompanyChargeTxLogHandler.GetResponseFailString(System.String)">
             <summary>
-            CompanyTxlog後端異常回應通用格式
+            企業加值Txlog後端異常回應通用格式
             </summary>
             <param name="inputData">Reqeust 電文</param>
             <returns>異常回應通用格式</returns>
@@ -425,7 +430,7 @@
         </member>
         <member name="T:Proxy.ConfigGetter">
             <summary>
-            存放設定檔用的靜態物件
+            存放設定檔數據用的靜態物件
             </summary>
         </member>
         <member name="M:Proxy.ConfigGetter.GetValue(System.String)">

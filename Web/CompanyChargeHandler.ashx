@@ -56,10 +56,10 @@ public class CompanyChargeHandler : IHttpHandler
         Stopwatch timer = new System.Diagnostics.Stopwatch();
         timer.Start();
         
-        log.Debug("[企業AutoLoad][UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent);
+        log.Debug("[企業加值][UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent);
         // 1. get request dat from input stream by ASCII
         string inputData = GetStringFromInputStream(context, Encoding.ASCII);
-        log.Debug("[企業AutoLoad Request] Data(length:" + inputData.Length + "):" + inputData);
+        log.Debug("[企業加值 Request] Data(length:" + inputData.Length + "):" + inputData);
         
         // 2. Parseing request Data to request POCO
         request = ParseRequestString(inputData);
@@ -78,7 +78,7 @@ public class CompanyChargeHandler : IHttpHandler
                 responseString = GetResponseFailString(inputData);
             }
             // 5. Response Data
-            log.Debug("[企業AutoLoad Response] Data(length:" + responseString.Length + "):" + responseString);
+            log.Debug("[企業加值 Response] Data(length:" + responseString.Length + "):" + responseString);
             responseBytes = Encoding.ASCII.GetBytes(responseString);
             context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return 
         }
@@ -91,7 +91,7 @@ public class CompanyChargeHandler : IHttpHandler
             context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);
         }
         timer.Start();
-        log.Debug("[企業AutoLoad]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
+        log.Debug("[企業加值]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
         context.Response.OutputStream.Flush();
         context.Response.OutputStream.Close();
         //context.Response.End();//此段會造成以下的Statement不執行
@@ -142,14 +142,14 @@ public class CompanyChargeHandler : IHttpHandler
             requestStr = JsonConvert.SerializeObject(request);
             requestBytes = Encoding.UTF8.GetBytes(requestStr);//WebAPI service used UTF8
 
-            log.Debug(m => m("[企業AutoLoad]開始送出Request : Uri({0}) data: {1}", serverUri, requestStr));
+            log.Debug(m => m("[企業加值]開始送出Request : Uri({0}) data: {1}", serverUri, requestStr));
             headers = new NameValueCollection();
             headers.Add("Content-Type", "application/json");//因應後台WebAPI服務格式要求
             responseBytes = Client.GetResponse(serverUri, "POST", out errMsg, 10000, headers, requestBytes);
             if (responseBytes != null)
             {
                 responseString = Encoding.UTF8.GetString(responseBytes);
-                log.Debug(m => m("[企業AutoLoad]Response JsonString:{0}", responseString));
+                log.Debug(m => m("[企業加值]Response JsonString:{0}", responseString));
                 response = JsonConvert.DeserializeObject<CLOL_Soc_Req>(responseString);
             }
             else
@@ -177,12 +177,12 @@ public class CompanyChargeHandler : IHttpHandler
         //文件格式參考: iCash2@iBon_Format_20150826(內部使用).xlsx
         if (request.Length != CompanyAutoLoadLength)
         {
-            log.Debug("[企業AutoLoad]Request字串長度不符:" + request.Length);
+            log.Debug("[企業加值]Request字串長度不符:" + request.Length);
             return null;
         }
         else if (!request.Substring(0, 4).Equals(Request_Com_Type))
         {
-            log.Debug("[企業AutoLoad]Request通訊種別不符:" + request.Substring(0, 4));
+            log.Debug("[企業加值]Request通訊種別不符:" + request.Substring(0, 4));
             return null;
         }
 
@@ -211,7 +211,7 @@ public class CompanyChargeHandler : IHttpHandler
         }
         catch (Exception ex)
         {
-            log.Error("[企業AutoLoad]轉換Request物件失敗:" + ex.StackTrace);
+            log.Error("[企業加值]轉換Request物件失敗:" + ex.StackTrace);
         }
         return toAPObject;
     }

@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Proxy
 {
     /// <summary>
-    /// 檢核卡號有效性,連到AP的檢查服務6103
+    /// 檢核卡號有效性,連到AP的檢查服務6103(未完成)
     /// </summary>
     public class CardValidationHandler : IHttpHandler
     {

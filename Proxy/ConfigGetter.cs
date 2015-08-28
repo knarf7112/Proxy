@@ -7,7 +7,7 @@ using Common.Logging;
 namespace Proxy
 {
     /// <summary>
-    /// 存放設定檔用的靜態物件
+    /// 存放設定檔數據用的靜態物件
     /// </summary>
     public static class ConfigGetter
     {
@@ -78,7 +78,7 @@ namespace Proxy
             }
             catch (Exception ex)
             {
-                log.Debug((m) => { m.Invoke("Web設定檔載入資料錯誤:" + ex.StackTrace); });
+                log.Debug((m) => { m.Invoke("Web設定檔載入資料錯誤:" + ex.Message + "\n " +  ex.StackTrace); });
             }
 
         }

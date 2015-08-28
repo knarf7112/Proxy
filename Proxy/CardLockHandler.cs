@@ -199,7 +199,7 @@ namespace Proxy
             }
             catch (Exception ex)
             {
-                log.Error("[鎖卡Txlog]轉換Request物件失敗:" + ex.StackTrace);
+                log.Error("[鎖卡Txlog]轉換Request物件失敗:" + ex.Message + "\n " + ex.StackTrace);
             }
             return toAPObject;
         }

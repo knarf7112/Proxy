@@ -268,7 +268,7 @@ namespace Proxy
             }
             catch (Exception ex)
             {
-                log.Error(m => { m.Invoke("Reflection Error:" + ex.StackTrace); });
+                log.Error(m => { m.Invoke("Reflection Error:" + ex.Message); });
             }
         }
 

@@ -6,6 +6,9 @@ using System.IO;
 
 namespace Proxy
 {
+    /// <summary>
+    /// 未完成
+    /// </summary>
     public class CheckTimeHandler : IHttpHandler
     {
         static bool isStart = false;
