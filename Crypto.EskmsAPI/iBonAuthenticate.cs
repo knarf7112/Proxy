@@ -302,7 +302,8 @@ namespace Crypto.EskmsAPI
             {
                 throw new ArgumentOutOfRangeException("Random A Start Index: " + this.Output_RandAStartIndex + " < 0");
             }
-            this.Output_RandAStartIndex = this.GenerateRanAIndex.Next(0, this.RandomACreater.GetTotalLength());
+            //隨機的陣列索引往後取一連續值(長度:SessionKeyGenerator.DataLength);
+            this.Output_RandAStartIndex = this.GenerateRanAIndex.Next(0, this.RandomACreater.GetTotalLength() - SessionKeyGenerator.DataLength);
             this.RanA = (ranA == null) ? this.RandomACreater.GetRanA(this.Output_RandAStartIndex) : ranA;
             Debug.WriteLine("Get Random A(index:" + this.Output_RandAStartIndex + "):" + BitConverter.ToString(this.RanA).Replace("-", ""));
         }

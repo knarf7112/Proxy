@@ -15,7 +15,7 @@ namespace RandomGenerator
         /// <summary>
         /// 指定的長度
         /// </summary>
-        private static readonly int DataLength = 16;
+        public static readonly int DataLength = 16;
 
         //選擇用的 Random A(4096個byte)
         private static readonly byte[] _randData = new byte[]
