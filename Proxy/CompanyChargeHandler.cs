@@ -91,7 +91,7 @@ namespace Proxy
                 context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);
             }
             timer.Start();
-            log.Debug("[企業加值]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
+            log.Debug("[企業加值]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency).ToString("f3") + "s)");
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
             //context.Response.End();//此段會造成以下的Statement不執行

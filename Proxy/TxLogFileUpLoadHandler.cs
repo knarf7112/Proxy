@@ -88,7 +88,7 @@ namespace Proxy
                 context.Response.Flush();
                 //context.Response.Close();//(Chrome)用此方法釋放資源會造成多個Request再發送且Client端無法取得資料,但是用FireFox沒問題
                 context.Response.OutputStream.Close();
-                log.Debug(m => { m.Invoke("[TxLogFileUpLoad]End Response (TimeSpend:" + ((decimal)timer.ElapsedTicks / Stopwatch.Frequency) + "s)"); });
+                log.Debug(m => { m.Invoke("[TxLogFileUpLoad]End Response (TimeSpend:" + ((decimal)timer.ElapsedTicks / Stopwatch.Frequency).ToString("f3") + "s)"); });
                 //close client connection
                 context.ApplicationInstance.CompleteRequest();
             }

@@ -90,7 +90,7 @@ public class CompanyChargeTxLogHandler : IHttpHandler
         timer.Start();
         context.Response.OutputStream.Flush();
         context.Response.OutputStream.Close();
-        log.Debug("[企業加值Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
+        log.Debug("[企業加值Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency).ToString("f3") + "s)");
         context.ApplicationInstance.CompleteRequest();
     }
 

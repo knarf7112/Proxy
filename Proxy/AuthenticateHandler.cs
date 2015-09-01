@@ -7,6 +7,7 @@ using System.Web;
 using Crypto.EskmsAPI;
 using System.IO;
 using Common.Logging;
+using System.Diagnostics;
 
 namespace Proxy
 {
@@ -16,6 +17,8 @@ namespace Proxy
     public class AuthenticateHandler : IHttpHandler
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(AuthenticateHandler));
+
+        private static readonly int AuthenticateLength = 50;
 
         public bool IsReusable
         {
@@ -48,33 +51,39 @@ namespace Proxy
 
             //}
             #endregion
-
+            string inputData = string.Empty;
+            byte[] responseData = null;
+            Stopwatch timer = new Stopwatch();//耗時計算
+            timer.Start();
             #region Request資料轉ASCII字串
             log.Debug("[UserIP]:" + context.Request.UserHostAddress + "\n UserAgent:" + context.Request.UserAgent);
-            string inputData = GetStringFromInputStream(context);
+            inputData = GetStringFromInputStream(context);
+            log.Debug("[Authenticate Request] Data(length:" + inputData.Length + "):" + inputData);
             context.Response.ContentType = "text/plain";
             context.Response.StatusCode = 200;
-            if (!String.IsNullOrEmpty(inputData))
+            //檢查request資料是否符合規定長度
+            if (!String.IsNullOrEmpty(inputData) && inputData.Length == AuthenticateLength)
             {
-                log.Debug("[Request] Data:" + inputData);
-                byte[] responseData = DoAuthenticate(inputData);
+                responseData = DoAuthenticate(inputData);
                 //context.Response.OutputStream.Position = 0;
-                log.Debug("[Response] Data:" + BitConverter.ToString(responseData).Replace("-", ""));
+                log.Debug("[Authenticate Response] Data(length:" + responseData.Length + "):" + BitConverter.ToString(responseData).Replace("-", ""));
                 context.Response.OutputStream.Write(responseData, 0, responseData.Length);//return 68 bytes
-                log.Debug("End Response");
+                log.Debug("[Authenticate]Response Write Finished");
             }
             else
             {
-                log.Debug("Test123");
-                context.Response.OutputStream.Write(Encoding.ASCII.GetBytes("Test123"), 0, 7);//.Write("Test");
+                log.Debug("Request Error");
+                context.Response.OutputStream.Write(Encoding.ASCII.GetBytes("Request Error"), 0, 13);//.Write("Test");
             }
             #endregion
 
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
             //context.Response.End();
+            timer.Start();
+            log.Debug("[Authenticate] End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency).ToString("f3") + "s)");
             context.ApplicationInstance.CompleteRequest();
-            log.Debug("End Response");
+            
         }
 
         #region Request轉ASCII字串
@@ -96,8 +105,6 @@ namespace Proxy
         /// <returns>RanB||E(RanA||RanBRol8)||E(iv,RanARol8)||RanAStartIndex</returns>
         private static byte[] DoAuthenticate(string inputData)
         {
-            if (inputData.Length != 50)
-                return new byte[5] { 0x48, 0x61, 0x20, 0x48, 0x61 };//ha ha
             byte[] requestBytes = new byte[25];
             requestBytes[0] = byte.Parse(inputData.Substring(0, 2));            //keyLabel:0~1     => "32" => byte{0x20}
             requestBytes[1] = byte.Parse(inputData.Substring(2, 2));            //KeyVersion:2~3   => "00" => byte{0x00}
@@ -143,7 +150,7 @@ namespace Proxy
                 return new byte[5] { 0x48, 0x61, 0x20, 0x48, 0x61 };                        //ha ha
             string keyLabel = "2ICH3F0000" + inputData[0].ToString() + "A";                 //byte[0]
             string KeyVersion = inputData[1].ToString();                                    //byte[1]
-            string uid = BitConverter.ToString(inputData, 2, 7).Replace("-", "");            //byte[2~8]
+            string uid = BitConverter.ToString(inputData, 2, 7).Replace("-", "");           //byte[2~8]
             string enc_RanB = BitConverter.ToString(inputData, 9, 16).Replace("-", "");     //byte[9~24]
             IiBonAuthenticate iBonAuth = null;
             try

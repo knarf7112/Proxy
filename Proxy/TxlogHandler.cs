@@ -107,7 +107,7 @@ namespace Proxy
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
             //context.Response.Close();//異常:會產生2~3個request進入並且無法正常獲得Response
-            log.Debug("[AutoLoadTxLog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency) + "s)");
+            log.Debug("[AutoLoadTxLog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency).ToString("f3") + "s)");
             context.ApplicationInstance.CompleteRequest();
         }
 
@@ -162,8 +162,8 @@ namespace Proxy
                 {
                     COM_TYPE = request.Substring(0, 4),                 //0~3     //0631:通訊種別
                     MERC_FLG = request.Substring(4, 3),                 //4~6     //SET:通路別
-                    STORE_NO = request.Substring(7, 8),                 //7~14    //01234567:店號
-                    REG_ID = request.Substring(15, 3),                  //15~17   //000:POS機編號
+                    STORE_NO = request.Substring(7, 8).Remove(0, 2),    //9~14    //123456:店號   //2015-09-01 8碼取後面6碼
+                    REG_ID = request.Substring(15, 3).Remove(0, 1),     //16~17   //12:POS機編號  //2015-09-01 3碼取後面2碼
                     POS_SEQNO = request.Substring(18, 8),               //18~25   //Pos交易序號
                     TXLOG_RC = request.Substring(44, 6),                //44~49   //中心端回應碼
                     READER_ID = request.Substring(50, 16),              //50~55   //Terminal ID
