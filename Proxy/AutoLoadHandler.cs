@@ -88,7 +88,7 @@ namespace Proxy
                 //context.Response.Write("<script>alert('Request Error');</script>");
                 context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);
             }
-            timer.Start();
+            timer.Stop();
             log.Debug("[AutoLoad]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency).ToString("f3") + "s)");//ToString("f3") 會4捨5入第4位 or ToString("#0.0000");強制取小數點前位數1位,取小數點後位數4位
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();

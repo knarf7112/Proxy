@@ -90,7 +90,7 @@ namespace Proxy
                 //context.Response.Write("<script>alert('Request Error');</script>");
                 context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);
             }
-            timer.Start();
+            timer.Stop();
             log.Debug("[企業加值]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency).ToString("f3") + "s)");
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();

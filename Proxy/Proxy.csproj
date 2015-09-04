@@ -80,13 +80,9 @@
     <Compile Include="TxLogHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Crypto.EskmsAPI\Crypto.EskmsAPI.csproj">
-      <Project>{0ded6403-0a91-48d6-9d7f-54d40e0904ea}</Project>
-      <Name>Crypto.EskmsAPI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Crypto\Crypto.csproj">
-      <Project>{2ae34b10-5d50-498b-917f-7107b49b654e}</Project>
-      <Name>Crypto</Name>
+    <ProjectReference Include="..\Crypto.POCO\Crypto.POCO.csproj">
+      <Project>{c13ade6e-2b57-4e96-a5e7-9cf2f59d661f}</Project>
+      <Name>Crypto.POCO</Name>
     </ProjectReference>
     <ProjectReference Include="..\RandomGenerator\RandomGenerator.csproj">
       <Project>{3afa7ac7-bc1f-4c92-a788-aa82ef1df4f2}</Project>

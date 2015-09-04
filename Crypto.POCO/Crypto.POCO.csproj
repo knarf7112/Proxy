@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{52506E07-4D3B-418D-95C4-980A39E644AD}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Authentication</RootNamespace>
-    <AssemblyName>Authentication</AssemblyName>
+    <RootNamespace>Crypto.POCO</RootNamespace>
+    <AssemblyName>Crypto.POCO</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,9 +20,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Crypto.POCO.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,32 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="LengthCkeckAttribute.cs" />
+    <Compile Include="EskmsPOCO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Crypto.EskmsAPI\Crypto.EskmsAPI.csproj">
-      <Project>{0ded6403-0a91-48d6-9d7f-54d40e0904ea}</Project>
-      <Name>Crypto.EskmsAPI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Crypto.POCO\Crypto.POCO.csproj">
-      <Project>{c13ade6e-2b57-4e96-a5e7-9cf2f59d661f}</Project>
-      <Name>Crypto.POCO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Crypto\Crypto.csproj">
-      <Project>{2ae34b10-5d50-498b-917f-7107b49b654e}</Project>
-      <Name>Crypto</Name>
-    </ProjectReference>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

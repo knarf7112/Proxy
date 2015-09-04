@@ -87,7 +87,7 @@ namespace Proxy
                 log.Debug("Request Error");
                 context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);
             }
-            timer.Start();
+            timer.Stop();
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
             log.Debug("[企業加值Txlog]End Response (TimeSpend:" + (timer.ElapsedTicks / (decimal)System.Diagnostics.Stopwatch.Frequency).ToString("f3") + "s)");

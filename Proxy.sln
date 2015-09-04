@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proxy", "Proxy\Proxy.csproj", "{1DEF89DA-8080-437A-B642-C555B84A9269}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication", "Authentication\Authentication.csproj", "{52506E07-4D3B-418D-95C4-980A39E644AD}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web(3)", "http://localhost:1539", "{FAC008FF-1D88-48C0-B64E-04B7003765BD}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web", "http://localhost:1539", "{FAC008FF-1D88-48C0-B64E-04B7003765BD}"
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		ProjectReferences = "{1def89da-8080-437a-b642-c555b84a9269}|Proxy.exe;{0DED6403-0A91-48D6-9D7F-54D40E0904EA}|Crypto.EskmsAPI.dll;{3AFA7AC7-BC1F-4C92-A788-AA82EF1DF4F2}|RandomGenerator.dll;{2AE34B10-5D50-498B-917F-7107B49B654E}|Crypto.dll;"
+		ProjectReferences = "{1def89da-8080-437a-b642-c555b84a9269}|Proxy.dll;{0DED6403-0A91-48D6-9D7F-54D40E0904EA}|Crypto.EskmsAPI.dll;{3AFA7AC7-BC1F-4C92-A788-AA82EF1DF4F2}|RandomGenerator.dll;{2AE34B10-5D50-498B-917F-7107B49B654E}|Crypto.dll;{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}|Crypto.POCO.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_1538"
 		Debug.AspNetCompiler.PhysicalPath = "Web\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_1538\"
@@ -43,6 +43,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlFileParse", "XmlFileParse\XmlFileParse.csproj", "{DC93AC13-BE59-4813-BE12-F5447C0703B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomGenerator_UnitTest", "RandomGenerator_UnitTest\RandomGenerator_UnitTest.csproj", "{EB297614-2859-4866-90B6-1085694E6C97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto.POCO", "Crypto.POCO\Crypto.POCO.csproj", "{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,6 +92,10 @@ Global
 		{EB297614-2859-4866-90B6-1085694E6C97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB297614-2859-4866-90B6-1085694E6C97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB297614-2859-4866-90B6-1085694E6C97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

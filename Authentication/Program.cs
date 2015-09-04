@@ -9,19 +9,64 @@ using System.Xml.Serialization;
 //
 using Crypto.EskmsAPI;
 using System.Web.Routing;
-
+using Newtonsoft.Json;
+//
+using Crypto.POCO;
 namespace Authentication
 {
     public class Program
     {
-        public class Test
+        //test :if poco have attribute setting and have any exception when serializeObject? no
+        public static void Main()
+        {
+            string result = "";
+            string err = null;
+            EskmsPOCO poco = new EskmsPOCO()
+            {
+                Input_KeyLabel = "2ICH3F000032A",
+                Input_KeyVersion = "00",
+                Input_UID = "04873ABA8D2C80",
+                Input_Enc_RanB = "4EF61041ABE8B0EF8B32A627B19D83AA"
+            };
+            poco.CHeckLength(true,out err);
+            result = JsonConvert.SerializeObject(poco);
+            Console.WriteLine("POCO => json String:" + result);
+
+            Console.ReadLine();
+        }
+
+        public struct Test
         {
             public String value1 { get; set; }
             public String value2 { get; set; }
+            public byte[] B1 { get; set; }
+            public byte[] B2 { get; set; }
         }
 
-        public static void Main()
+        public static void Main3()
         {
+            Test t1 = new Test()
+            {
+                value1 = "qoo1",
+                value2 = "test2"
+            };
+            Test t2 = new Test()
+            {
+                value1 = "T2",
+                value2 = "Q2",
+                B1 = new byte[] { 123, 58, 69, 77, 99, 255 },
+                B2 = new byte[] { 33, 44, 55, 66, 77, 88, 99, 0 }
+            };
+            string jsonT1 = JsonConvert.SerializeObject(t1);
+            Test t11 = JsonConvert.DeserializeObject<Test>(jsonT1);
+            Console.WriteLine("t1 serialize:" + jsonT1);
+
+            string jsonT2 = JsonConvert.SerializeObject(t2);//物件內的陣列元素會被轉換成Base64字串
+
+            string b1 = Convert.ToBase64String(t2.B1);//
+            byte[] b11 = Convert.FromBase64String(b1);
+            t11 = JsonConvert.DeserializeObject<Test>(jsonT2);
+            Console.WriteLine("t2 serialize:" + jsonT2);
             string filePath = @"C:\MyDirectory\My.File.bat";
             string data = System.IO.Path.GetDirectoryName(filePath);
             bool isExist = Directory.Exists(data);

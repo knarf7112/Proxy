@@ -103,7 +103,7 @@ namespace Proxy
                 log.Debug("Request Error");
                 context.Response.OutputStream.Write(System.Text.Encoding.ASCII.GetBytes("Request Error"), 0, 13);
             }
-            timer.Start();
+            timer.Stop();
             context.Response.OutputStream.Flush();
             context.Response.OutputStream.Close();
             //context.Response.Close();//異常:會產生2~3個request進入並且無法正常獲得Response
