@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 //
 using System.Web;
@@ -22,7 +20,7 @@ namespace Proxy
         /// 認證資料長度
         /// </summary>
         private static readonly int AuthenticateLength = 50;
-
+        
         /// <summary>
         /// 從設定檔讀取的連向後台Service的服務名稱
         /// </summary>

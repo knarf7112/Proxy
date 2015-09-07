@@ -14,13 +14,13 @@ namespace Crypto.POCO
         /// <summary>
         /// (擴充方法)用來檢查POCO物件內字串屬性的資料長度是否符合Attribute設定的長度
         /// ex: obj.CHeckLength();
-        /// 長度不符會拋出Exception
+        /// 長度不符會拋出ArgumentOutOfRangeException
         /// </summary>
         /// <typeparam name="T">要檢查的物件型別type</typeparam>
         /// <param name="obj"></param>
         /// <param name="throwExcption">是:拋出錯誤, 否:異常從errMsg噴出</param>
         /// <param name="errMsg">存放錯誤字串(無錯誤或throwExcption為false:null)</param>
-        public static void CHeckLength<T>(this T obj,bool throwExcption,out string errMsg)
+        public static void CheckLength<T>(this T obj,bool throwExcption,out string errMsg)
         {
             errMsg = null;
             string err = null;
@@ -43,7 +43,7 @@ namespace Crypto.POCO
                                 err = String.Format("{0}屬性與設定資料長度不符 => 輸入(length:{1})不等於屬性的設定(length:{2})", property.Name, valueLength, attr.FixLength);
                                 if (throwExcption)
                                 {
-                                    throw new Exception(err);
+                                    throw new ArgumentOutOfRangeException("[CheckLength] Error", err);
                                 }
                                 else
                                 {
@@ -61,7 +61,7 @@ namespace Crypto.POCO
                                 err = String.Format("{0}屬性與設定資料長度不符 => 輸入(length:{1})不等於屬性的設定(length:{2})", property.Name, valueLength, attr.FixLength);
                                 if (throwExcption)
                                 {
-                                    throw new Exception(err);
+                                    throw new ArgumentOutOfRangeException("[CheckLength] Error", err);
                                 }
                                 else
                                 {
@@ -74,7 +74,7 @@ namespace Crypto.POCO
                             err = String.Format("{0}屬性:資料型態不為自訂的檢核型別或資料為空!!!", property.Name);
                             if (throwExcption)
                             {
-                                throw new Exception(err);
+                                throw new ArgumentOutOfRangeException("[CheckLength] Error", err);
                             }
                             else
                             {

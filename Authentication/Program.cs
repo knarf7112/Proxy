@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Crypto.POCO;
 namespace Authentication
 {
+    //測試用專案
     public class Program
     {
         //test :if poco have attribute setting and have any exception when serializeObject? no
@@ -28,7 +29,7 @@ namespace Authentication
                 Input_UID = "04873ABA8D2C80",
                 Input_Enc_RanB = "4EF61041ABE8B0EF8B32A627B19D83AA"
             };
-            poco.CHeckLength(true,out err);
+            poco.CheckLength(true,out err);
             result = JsonConvert.SerializeObject(poco);
             Console.WriteLine("POCO => json String:" + result);
 
