@@ -1,4 +1,4 @@
-﻿<%@ WebHandler Language="C#" Class="CompanyChargeTxLogHandler" %>
+﻿<%@ WebHandler Language="C#" Class="CompanyPrepaidTxLogHandler" %>
 
 using System;
 using System.Web;
@@ -14,10 +14,10 @@ using WebHttpClient;
 using IBON_TRADE_MANAGER_Lib;
 using System.Collections.Specialized;
 
-public class CompanyChargeTxLogHandler : IHttpHandler
+public class CompanyPrepaidTxLogHandler : IHttpHandler
 {
 
-    private static readonly ILog log = LogManager.GetLogger(typeof(CompanyChargeTxLogHandler));
+    private static readonly ILog log = LogManager.GetLogger(typeof(CompanyPrepaidTxLogHandler));
 
     /// <summary>
     /// 要從web config檔內讀取的資料名稱(鎖卡TxLog要回傳的後台Uri)
@@ -79,7 +79,15 @@ public class CompanyChargeTxLogHandler : IHttpHandler
             // 5. Response Data
             log.Debug("[企業加值Txlog Response] Data(length:" + responseString.Length + "):" + responseString);
             responseBytes = Encoding.ASCII.GetBytes(responseString);
-            context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return 
+            //check client connect state
+            if (context.Response.IsClientConnected)
+            {
+                context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return  
+            }
+            else
+            {
+                log.Error(m => m("[CompanyPrepaidTxLog]Client disConnect: {0}", responseString));
+            }
         }
         else
         {

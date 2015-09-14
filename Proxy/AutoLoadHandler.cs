@@ -78,7 +78,15 @@ namespace Proxy
                 // 5. Response Data
                 log.Debug("[AutoLoad Response] Data(length:" + responseString.Length + "):" + responseString);
                 responseBytes = Encoding.ASCII.GetBytes(responseString);
-                context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return 
+                //check client connect state
+                if (context.Response.IsClientConnected)
+                {
+                   context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return  
+                }
+                else
+                {
+                    log.Error(m => m("[AutoLoad]Client disConnect: {0}", responseString));
+                }
             }
             else
             {

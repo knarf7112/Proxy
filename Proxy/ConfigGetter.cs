@@ -17,6 +17,9 @@ namespace Proxy
 
         private static object lockObj = new object();
 
+        /// <summary>
+        /// static initial config
+        /// </summary>
         static ConfigGetter()
         {
             log.Debug((m) => { m.Invoke("初始化設定檔數據載入"); });
@@ -40,7 +43,7 @@ namespace Proxy
         public static string GetValue(string configName)
         {
             log.Debug((m) => { m.Invoke("開始取得設定資料物件:" + configName); });
-            //若為null就重新初始化字典檔(double Thread safe)
+            //若為null就重新初始化字典檔(double Thread safe check the dictionary field)
             if (_dicConfig == null)
             {
                 lock (lockObj)

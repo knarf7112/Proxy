@@ -1,4 +1,4 @@
-﻿<%@ WebHandler Language="C#" Class="CompanyChargeHandler" %>
+﻿<%@ WebHandler Language="C#" Class="CompanyPrepaidHandler" %>
 
 using System;
 using System.Web;
@@ -14,10 +14,10 @@ using IBON_TRADE_MANAGER_Lib;
 using WebHttpClient;
 using System.Collections.Specialized;
 
-public class CompanyChargeHandler : IHttpHandler
+public class CompanyPrepaidHandler : IHttpHandler
 {
 
-    private static readonly ILog log = LogManager.GetLogger(typeof(CompanyChargeHandler));
+    private static readonly ILog log = LogManager.GetLogger(typeof(CompanyPrepaidHandler));
     /// <summary>
     /// 要從web config檔內讀取的資料名稱
     /// </summary>
@@ -80,7 +80,15 @@ public class CompanyChargeHandler : IHttpHandler
             // 5. Response Data
             log.Debug("[企業加值 Response] Data(length:" + responseString.Length + "):" + responseString);
             responseBytes = Encoding.ASCII.GetBytes(responseString);
-            context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return 
+            //check client connect state
+            if (context.Response.IsClientConnected)
+            {
+                context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return  
+            }
+            else
+            {
+                log.Error(m => m("[CompanyPrepaid]Client disConnect: {0}", responseString));
+            }
         }
         else
         {

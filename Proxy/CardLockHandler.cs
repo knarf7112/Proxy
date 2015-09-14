@@ -79,7 +79,15 @@ namespace Proxy
                 // 5. Response Data
                 log.Debug("[鎖卡Txlog Response] Data(length:" + responseString.Length + "):" + responseString);
                 responseBytes = Encoding.ASCII.GetBytes(responseString);
-                context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return 
+                //check client connect state
+                if (context.Response.IsClientConnected)
+                {
+                    context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);//return  
+                }
+                else
+                {
+                    log.Error(m => m("[[鎖卡Txlog]Client disConnect: {0}", responseString));
+                }
             }
             else
             {

@@ -263,69 +263,69 @@
             未完成
             </summary>
         </member>
-        <member name="T:Proxy.CompanyChargeHandler">
+        <member name="T:Proxy.CompanyPrepaidHandler">
             <summary>
             企業自動加值 handler
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeHandler.ServiceName">
+        <member name="F:Proxy.CompanyPrepaidHandler.ServiceName">
             <summary>
             要從web config檔內讀取的資料名稱
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeHandler.lockObj">
+        <member name="F:Proxy.CompanyPrepaidHandler.lockObj">
             <summary>
             used to lock dicApConfig
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeHandler.Request_Com_Type">
+        <member name="F:Proxy.CompanyPrepaidHandler.Request_Com_Type">
             <summary>
             此服務的請求電文通訊種別(4 bytes)
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeHandler.Response_Com_Type">
+        <member name="F:Proxy.CompanyPrepaidHandler.Response_Com_Type">
             <summary>
             此服務的回應電文通訊種別(4 bytes)
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeHandler.CompanyAutoLoadLength">
+        <member name="F:Proxy.CompanyPrepaidHandler.CompanyAutoLoadLength">
             <summary>
             自動加值電文長度
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeHandler.Response_Generic_Error_ReturnCode">
+        <member name="F:Proxy.CompanyPrepaidHandler.Response_Generic_Error_ReturnCode">
             <summary>
             通用後台AP錯誤Return Code(6 bytes)
             </summary>
         </member>
-        <member name="M:Proxy.CompanyChargeHandler.ProcessRequest(System.Web.HttpContext)">
+        <member name="M:Proxy.CompanyPrepaidHandler.ProcessRequest(System.Web.HttpContext)">
             <summary>
             Request in
             </summary>
             <param name="context">HttpContext</param>
         </member>
-        <member name="M:Proxy.CompanyChargeHandler.GetResponseFailString(System.String)">
+        <member name="M:Proxy.CompanyPrepaidHandler.GetResponseFailString(System.String)">
             <summary>
             企業自動加值後端異常回應通用格式
             </summary>
             <param name="inputData">Reqeust 電文</param>
             <returns>異常回應通用格式</returns>
         </member>
-        <member name="M:Proxy.CompanyChargeHandler.SendAndReceiveFromAP(IBON_TRADE_MANAGER_Lib.CLOL_Soc_Req,System.String)">
+        <member name="M:Proxy.CompanyPrepaidHandler.SendAndReceiveFromAP(IBON_TRADE_MANAGER_Lib.CLOL_Soc_Req,System.String)">
             <summary>
             Send Reuqest POCO to Center AP and receive response POCO
             </summary>
             <param name="request">Company自動加值請求物件</param>
             <returns>Company自動加值回應物件</returns>
         </member>
-        <member name="M:Proxy.CompanyChargeHandler.ParseRequestString(System.String)">
+        <member name="M:Proxy.CompanyPrepaidHandler.ParseRequestString(System.String)">
             <summary>
             Company自動加值請求電文字串轉自動加值請求物件(要傳給後端AP用的)
             </summary>
             <param name="request">Company自動加值請求電文字串(ASCII)</param>
             <returns>Company自動加值請求物件</returns>
         </member>
-        <member name="M:Proxy.CompanyChargeHandler.ParseResponseString(IBON_TRADE_MANAGER_Lib.CLOL_Soc_Req,IBON_TRADE_MANAGER_Lib.CLOL_Soc_Req,System.String,System.String@)">
+        <member name="M:Proxy.CompanyPrepaidHandler.ParseResponseString(IBON_TRADE_MANAGER_Lib.CLOL_Soc_Req,IBON_TRADE_MANAGER_Lib.CLOL_Soc_Req,System.String,System.String@)">
             <summary>
             比對並轉換Request和Response物件,請求和回應是同一組則out電文字串,不同out null
             </summary>
@@ -335,7 +335,7 @@
             <param name="responseString"></param>
             <returns>成功out出response字串/失敗out null</returns>
         </member>
-        <member name="M:Proxy.CompanyChargeHandler.GetStringFromInputStream(System.Web.HttpContext,System.Text.Encoding)">
+        <member name="M:Proxy.CompanyPrepaidHandler.GetStringFromInputStream(System.Web.HttpContext,System.Text.Encoding)">
             <summary>
             Get request string from HttpContext Input Stream
             </summary>
@@ -343,70 +343,70 @@
             <param name="encoding">要使用的編碼方式</param>
             <returns>電文字串(已編碼)</returns>
         </member>
-        <member name="M:Proxy.CompanyChargeHandler.StringToByteArray(System.String)">
+        <member name="M:Proxy.CompanyPrepaidHandler.StringToByteArray(System.String)">
             <summary>
             hex string to byte array
             </summary>
             <param name="hex">hex data</param>
             <returns></returns>
         </member>
-        <member name="M:Proxy.CompanyChargeHandler.GetBytesFromInputStream(System.Web.HttpContext)">
+        <member name="M:Proxy.CompanyPrepaidHandler.GetBytesFromInputStream(System.Web.HttpContext)">
             <summary>
             Get request byte array from HttpContext Input Stream
             </summary>
             <param name="context">current HttpContext</param>
             <returns>電文陣列(未編碼)</returns>
         </member>
-        <member name="T:Proxy.CompanyChargeTxLogHandler">
+        <member name="T:Proxy.CompanyPrepaidTxLogHandler">
             <summary>
             企業自動加值TxLog Handler
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeTxLogHandler.ServiceName">
+        <member name="F:Proxy.CompanyPrepaidTxLogHandler.ServiceName">
             <summary>
             要從web config檔內讀取的資料名稱(鎖卡TxLog要回傳的後台Uri)
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeTxLogHandler.TxlogLength">
+        <member name="F:Proxy.CompanyPrepaidTxLogHandler.TxlogLength">
             <summary>
             規格指定的電文長度
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeTxLogHandler.Request_Com_Type">
+        <member name="F:Proxy.CompanyPrepaidTxLogHandler.Request_Com_Type">
             <summary>
             此服務的請求電文通訊種別(4 bytes)
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeTxLogHandler.Response_Com_Type">
+        <member name="F:Proxy.CompanyPrepaidTxLogHandler.Response_Com_Type">
             <summary>
             此服務的回應電文通訊種別(4 bytes)
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeTxLogHandler.Response_Generic_Error_ReturnCode">
+        <member name="F:Proxy.CompanyPrepaidTxLogHandler.Response_Generic_Error_ReturnCode">
             <summary>
             通用後台AP錯誤Return Code(6 bytes)
             </summary>
         </member>
-        <member name="F:Proxy.CompanyChargeTxLogHandler.TxLogInnerReturnCode_OK">
+        <member name="F:Proxy.CompanyPrepaidTxLogHandler.TxLogInnerReturnCode_OK">
             <summary>
             正常交易的Return Code(用來比對TxLog內卡機回傳的Return Code)
             </summary>
         </member>
-        <member name="M:Proxy.CompanyChargeTxLogHandler.SendAndReceiveFromAP(IBON_TRADE_MANAGER_Lib.TOL_Soc_Req,System.String)">
+        <member name="M:Proxy.CompanyPrepaidTxLogHandler.SendAndReceiveFromAP(IBON_TRADE_MANAGER_Lib.TOL_Soc_Req,System.String)">
             <summary>
             Send Reuqest POCO to Center AP and receive response POCO
             </summary>
             <param name="request">自動加值請求物件</param>
             <returns>自動加值回應物件</returns>
         </member>
-        <member name="M:Proxy.CompanyChargeTxLogHandler.ParseRequestString(System.String)">
+        <member name="M:Proxy.CompanyPrepaidTxLogHandler.ParseRequestString(System.String)">
             <summary>
             Company自動加值Txlog請求電文字串轉自動加值Txlog請求物件(要傳給後端AP用的)
             </summary>
             <param name="request">自動加值Txlog請求電文字串(ASCII)</param>
             <returns>自動加值Txlog請求物件</returns>
         </member>
-        <member name="M:Proxy.CompanyChargeTxLogHandler.ParseResponseString(IBON_TRADE_MANAGER_Lib.TOL_Soc_Req,IBON_TRADE_MANAGER_Lib.TOL_Soc_Req,System.String,System.String@)">
+        <member name="M:Proxy.CompanyPrepaidTxLogHandler.ParseResponseString(IBON_TRADE_MANAGER_Lib.TOL_Soc_Req,IBON_TRADE_MANAGER_Lib.TOL_Soc_Req,System.String,System.String@)">
             <summary>
             比對並轉換Request和Response物件,請求和回應是同一組則out電文字串,不同out null
             </summary>
@@ -416,14 +416,14 @@
             <param name="responseString"></param>
             <returns>成功out出response字串/失敗out null</returns>
         </member>
-        <member name="M:Proxy.CompanyChargeTxLogHandler.GetResponseFailString(System.String)">
+        <member name="M:Proxy.CompanyPrepaidTxLogHandler.GetResponseFailString(System.String)">
             <summary>
             企業加值Txlog後端異常回應通用格式
             </summary>
             <param name="inputData">Reqeust 電文</param>
             <returns>異常回應通用格式</returns>
         </member>
-        <member name="M:Proxy.CompanyChargeTxLogHandler.GetStringFromInputStream(System.Web.HttpContext,System.Text.Encoding)">
+        <member name="M:Proxy.CompanyPrepaidTxLogHandler.GetStringFromInputStream(System.Web.HttpContext,System.Text.Encoding)">
             <summary>
             Get request string from HttpContext Input Stream
             </summary>
@@ -431,14 +431,14 @@
             <param name="encoding">要使用的編碼方式</param>
             <returns>電文字串(已編碼)</returns>
         </member>
-        <member name="M:Proxy.CompanyChargeTxLogHandler.StringToByteArray(System.String)">
+        <member name="M:Proxy.CompanyPrepaidTxLogHandler.StringToByteArray(System.String)">
             <summary>
             hex string to byte array
             </summary>
             <param name="hex">hex data</param>
             <returns></returns>
         </member>
-        <member name="M:Proxy.CompanyChargeTxLogHandler.GetBytesFromInputStream(System.Web.HttpContext)">
+        <member name="M:Proxy.CompanyPrepaidTxLogHandler.GetBytesFromInputStream(System.Web.HttpContext)">
             <summary>
             Get request byte array from HttpContext Input Stream
             </summary>
