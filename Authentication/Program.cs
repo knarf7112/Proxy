@@ -12,13 +12,31 @@ using System.Web.Routing;
 using Newtonsoft.Json;
 //
 using Crypto.POCO;
+//
+using System.Text.RegularExpressions;
+
 namespace Authentication
 {
     //測試用專案
     public class Program
     {
+        static void Main()
+        {
+            string checkCode = "1523ea4b7db7e072fbc4bc8bf84623fa6b10ea79";
+            string checkCode2 = "QQ23ea4b7db7e072fbc4bc8bf84623fa6b10ea79";//前面兩位變QQ
+            string pattern = @"[0-9A-Fa-f]{40}";//內容物為hex且連續長度為40才是sha1過的(20 bytes)
+            Regex reg = new Regex(pattern);
+
+            Console.WriteLine("checkCode Matched:" + reg.Match(checkCode).Value);
+
+            Console.WriteLine("checkCode2 Matched:" + reg.Match(checkCode2).Value);
+
+            Console.ReadKey();
+        }
+
+        //*************************************************************************************
         //test :if poco have attribute setting and have any exception when serializeObject? no
-        public static void Main()
+        public static void Main4()
         {
             string result = "";
             string err = null;

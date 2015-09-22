@@ -209,10 +209,13 @@ namespace Crypto.EskmsAPI
         private void init()
         {
             Debug.WriteLine("init...");
+            string pattern = @"[0-9A-Fa-f]{40}";
+            Regex checkAuthCode = new Regex(pattern);
             this.parseUrl();
             this.ipEndPoint = new IPEndPoint(IPAddress.Parse(this.host), this.port);
             this.tailBytes = Encoding.ASCII.GetBytes("\"}}");
-            string authCodeHex = this.HexConverter.Bytes2Hex(this.HashWorker.ComputeHash(Encoding.ASCII.GetBytes(this.AuthCode)));
+            //若輸入為sha1過的密碼就直接用,若是輸入未加密的則另外做sha1和hash
+            string authCodeHex = (this.AuthCode.Length == 40 && checkAuthCode.IsMatch(this.AuthCode)) ? this.AuthCode : this.HexConverter.Bytes2Hex(this.HashWorker.ComputeHash(Encoding.ASCII.GetBytes(this.AuthCode)));
             string webContStrP1 =
                 "Version=1.4&AppName=" + this.AppName
               + "&AppCode=" + this.AppCode
