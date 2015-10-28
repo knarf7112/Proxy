@@ -159,7 +159,7 @@ namespace Crypto.EskmsAPI
         private void LoadXmlConfig(string fileName)
         {
             iBonAuthenticate.dicKmsLoginConfig = new Dictionary<string, string>();
-            string fileFullPath = AppDomain.CurrentDomain.BaseDirectory + @"Config\" + fileName;
+            string fileFullPath = AppDomain.CurrentDomain.BaseDirectory + @"\Config\" + fileName;
             XDocument doc = XDocument.Load(fileFullPath);
             XElement root = doc.Root;
             string url = root.Element("Url").Value;

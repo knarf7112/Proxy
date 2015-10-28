@@ -76,7 +76,7 @@ namespace Crypto.EskmsAPI
             if ((null != iv) && (16 == iv.Length))
             {
                 byte[] ivHexBytes = Encoding.ASCII.GetBytes(this.HexConverter.Bytes2Hex(iv));
-                Buffer.BlockCopy(ivHexBytes, 0, request, start + 159, ivHexBytes.Length);
+                Buffer.BlockCopy(ivHexBytes, 0, request, start + 159, ivHexBytes.Length);//159
             }
             start += this.webContP2.Length;
             // copy decrypted
@@ -84,12 +84,15 @@ namespace Crypto.EskmsAPI
             Buffer.BlockCopy(decryptedHexBytes, 0, request, start, decryptedHexBytes.Length);
             start += decryptedHexBytes.Length;
             Buffer.BlockCopy(this.tailBytes, 0, request, start, this.tailBytes.Length);
-
+            //
+            Debug.WriteLine(string.Format("{0}", Encoding.ASCII.GetString(request)));
             // socket send
             using (Socket m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
                 m_socket.NoDelay = true;
                 Debug.WriteLine("Begin connection....");
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
                 m_socket.Connect(this.ipEndPoint);
                 //
                 m_socket.Send(request, request.Length, SocketFlags.None);
@@ -99,7 +102,8 @@ namespace Crypto.EskmsAPI
                 //
                 m_socket.Shutdown(SocketShutdown.Both);
                 m_socket.Close();
-                Debug.WriteLine("End connection...");
+                timer.Stop();
+                Debug.WriteLine("End connection... TimeSpend:" + (timer.ElapsedTicks/(decimal)Stopwatch.Frequency).ToString("f3") + "s");
                 //
                 string response = Encoding.UTF8.GetString(buf, 0, cnt);
                 string pattern = @"""ReturnCode"":\s*(?'RC'[^,]*),.*""value"":""(?'RV'[^""]*)""";

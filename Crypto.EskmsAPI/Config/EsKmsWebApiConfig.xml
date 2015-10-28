@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--正式KMS-->
 <EsKmsWebApi>
-  <!--正式KMS-->
   <Url>http://10.27.68.163:8080/eGATEsKMS/interface</Url>
   <AppCode>APP_001</AppCode>
   <AuthCode>12345678</AuthCode>

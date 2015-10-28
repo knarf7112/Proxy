@@ -65,10 +65,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AesCMac2Worker_UnitTest.cs" />
+    <Compile Include="DebugToLog4Net.cs" />
     <Compile Include="EsKmsApi_UnitTest.cs" />
     <Compile Include="EsKmsWebApi_UnitTest.cs" />
     <Compile Include="iBonAuthenticate_UnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test_TraceListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Crypto.EskmsAPI\Crypto.EskmsAPI.csproj">
