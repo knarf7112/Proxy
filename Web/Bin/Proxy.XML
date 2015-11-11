@@ -450,6 +450,11 @@
             存放設定檔數據用的靜態物件
             </summary>
         </member>
+        <member name="M:Proxy.ConfigGetter.#cctor">
+            <summary>
+            static initial config
+            </summary>
+        </member>
         <member name="M:Proxy.ConfigGetter.GetValue(System.String)">
             <summary>
             指定Key取得字典檔內的設定資料
