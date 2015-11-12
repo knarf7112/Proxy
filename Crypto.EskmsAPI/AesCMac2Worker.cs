@@ -1,6 +1,7 @@
 ﻿using Crypto.CommonUtility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -169,6 +170,7 @@ namespace Crypto.EskmsAPI
                 //this.EsCryptor.Cipher(this.key, (uint)KMS_CIPHER_CODE.KMS_CIPHER_METHOD_ENCRYPT, mechanism, data_in, ref data_out, ref result);
                 this.EsCryptor.CipherMode = "ECB";
                 k0 = this.EsCryptor.Encrypt(this.keyLabel, null, data);
+                Debug.WriteLine("k0 == null:" + (k0 == null).ToString());
                 //k0 = this.ByteWorker.SubArray(out_data_buf, 0, data_out.value_len);
                 //log.Debug("K0:[" + this.HexConverter.Bytes2Hex(k0) + "]");
             }
@@ -252,6 +254,10 @@ namespace Crypto.EskmsAPI
          *///inputData="01+uid+ICASH+uid+ICASH+uid"
         private byte[] getFullMac(byte[] inputData)
         {
+            if (inputData == null)
+            {
+                Debug.WriteLine("[getFullMac]inputData is null");
+            }
             //this.EsCryptor.Authentication();
             if (this.k1 == null)
             {

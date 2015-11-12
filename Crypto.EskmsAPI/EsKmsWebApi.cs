@@ -117,6 +117,10 @@ namespace Crypto.EskmsAPI
             }
             //
             this.webHead = null;
+            if (result == null)
+            {
+                Debug.WriteLine("[Socket receive]Result is null");
+            }
             return result;
         }
 
