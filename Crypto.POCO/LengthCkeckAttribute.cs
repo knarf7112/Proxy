@@ -22,6 +22,7 @@ namespace Crypto.POCO
         /// <param name="errMsg">存放錯誤字串(無錯誤或throwExcption為false:null)</param>
         public static void CheckLength<T>(this T obj,bool throwExcption,out string errMsg)
         {
+            
             errMsg = null;
             string err = null;
             lock (lockObj)

@@ -50,6 +50,8 @@
     <Compile Include="IEsKmsWebApi.cs" />
     <Compile Include="IiBonAuthenticate.cs" />
     <Compile Include="IKey2Deriver.cs" />
+    <Compile Include="IKMSGetter.cs" />
+    <Compile Include="KMSGetter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -445,6 +445,58 @@
             <param name="context">current HttpContext</param>
             <returns>電文陣列(未編碼)</returns>
         </member>
+        <member name="F:Proxy.KMSGetterHandler.LoadKeyLength">
+            <summary>
+            認證資料長度
+            </summary>
+        </member>
+        <member name="F:Proxy.KMSGetterHandler.ServiceName">
+            <summary>
+            從設定檔讀取的連向後台Service的服務名稱
+            </summary>
+        </member>
+        <member name="M:Proxy.KMSGetterHandler.GetStringFromInputStream(System.Web.HttpContext)">
+            <summary>
+            get string from InputStream and Encoding default is ASCII
+            </summary>
+            <param name="context">request context</param>
+            <returns>request http body</returns>
+        </member>
+        <member name="M:Proxy.KMSGetterHandler.DoLoadKey(System.String)">
+            <summary>
+            Convert ASCII string to byte array(length:50)
+            </summary>
+            <param name="inputData">challenge Data and parameters</param>
+            <returns>RanB||E(RanA||RanBRol8)||E(iv,RanARol8)||RanAStartIndex</returns>
+        </member>
+        <member name="M:Proxy.KMSGetterHandler.StringToByteArray(System.String)">
+            <summary>
+            hex string to byte array
+            </summary>
+            <param name="hex">hex data</param>
+            <returns></returns>
+        </member>
+        <member name="M:Proxy.KMSGetterHandler.DoLoadKey(System.Byte[])">
+            <summary>
+            Run 3 Pass Authenticate Flow by Byte Array(length:25)
+            </summary>
+            <param name="inputData">challenge Data and parameters</param>
+            <returns>RanB||E(RanA||RanBRol8)||E(iv,RanARol8)||RanAStartIndex</returns>
+        </member>
+        <member name="M:Proxy.KMSGetterHandler.GetResponse(Crypto.POCO.EskmsKeyPOCO)">
+            <summary>
+            連線後端AP並取得output data
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Proxy.KMSGetterHandler.InsertDataLengthToHeader(System.Byte[])">
+            <summary>
+            將數據前面增加數據長度(4 bytes) ex:data={0x01,0x02,0x03,0x04} => {0x04,0x00,0x00,0x00,  0x01,0x02,0x03,0x04} 
+            </summary>
+            <param name="data">數據</param>
+            <returns></returns>
+        </member>
         <member name="T:Proxy.ConfigGetter">
             <summary>
             存放設定檔數據用的靜態物件

@@ -22,6 +22,25 @@ namespace Authentication
     {
         static void Main()
         {
+            /******************************************************************************/
+            /*將長度轉成4byte的byte[]放在byte[]陣列的頭部 用BitConvert去轉回int長度*/
+            byte[] aaa = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+            int length = 65538;//513;
+            byte[] b1 = new byte[6];// 00000000 00000000 00000000 00000000
+            b1[0] = Convert.ToByte((length << 24) >> 24);//向左位移24bit在向右24it:(只要int(4*8bytes)的第0個byte):目的是把255以上的值都位移掉(變0)
+            b1[1] = Convert.ToByte((length << 16) >> 24);//向左位移16bit在向右24it:(只要int(4*8bytes)的第1個byte)目的是把255以下的值都位移掉(變0)
+            b1[2] = Convert.ToByte((length << 8) >> 24);
+            b1[3] = Convert.ToByte((length << 0) >> 24); 
+            b1[4] = 0xFF;
+            int lengthResult = BitConverter.ToInt32(b1, 0);
+            byte[] ddd = aaa.Concat(aaa).ToArray();
+            // Store integer 182
+            int intValue = 512;
+            // Convert integer 182 as a hex in a string variable
+            string hexValue = intValue.ToString("X4");
+            // Convert the hex string back to the number
+            int intAgain = int.Parse(hexValue, System.Globalization.NumberStyles.HexNumber);
+            /******************************************************************************/
             string checkCode = "1523ea4b7db7e072fbc4bc8bf84623fa6b10ea79";
             string checkCode2 = "QQ23ea4b7db7e072fbc4bc8bf84623fa6b10ea79";//前面兩位變QQ
             string pattern = @"[0-9A-Fa-f]{40}";//內容物為hex且連續長度為40才是sha1過的(20 bytes)

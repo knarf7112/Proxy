@@ -172,7 +172,7 @@ namespace Crypto.EskmsAPI
                 k0 = this.EsCryptor.Encrypt(this.keyLabel, null, data);
                 Debug.WriteLine("k0 == null:" + (k0 == null).ToString());
                 //k0 = this.ByteWorker.SubArray(out_data_buf, 0, data_out.value_len);
-                //log.Debug("K0:[" + this.HexConverter.Bytes2Hex(k0) + "]");
+                //Debug.WriteLine("K0:[" + this.HexConverter.Bytes2Hex(k0) + "]");
             }
             catch (Exception ex)
             {
@@ -185,6 +185,7 @@ namespace Crypto.EskmsAPI
             //    //hd2.Free();
             //}
             //
+
             this.k1 = this.getNextSubKey(k0);
             //log.Debug("K1:[" + this.HexConverter.Bytes2Hex(this.k1) + "]");
             //

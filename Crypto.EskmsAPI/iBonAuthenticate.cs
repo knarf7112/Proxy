@@ -42,7 +42,7 @@ namespace Crypto.EskmsAPI
 
         private int macLength = ConstBlockSize;
 
-        private byte[] iv = null;//initial vector
+        //private byte[] iv = null;//initial vector
         private byte[] Kx = null;//divers Key(16 bytes)
         private byte[] RanA = null;
 
