@@ -37,6 +37,12 @@ namespace Crypto.POCO
         public string Input_DeviceID { get; set; }
 
         /// <summary>
+        /// 測試解鎖是否成功的TxLog(length:288)
+        /// 目前只需要看16~23(ReturnCode),之後再補上驗證mac
+        /// </summary>
+        public string TestTxLog { get; set; }
+
+        /// <summary>
         /// Divers Key (16 bytes)
         /// </summary>
         public byte[] Output_DiversKey { get; set; }
