@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="EskmsKeyPOCO.cs" />
+    <Compile Include="EskmsKeyTxLogPOCO.cs" />
     <Compile Include="LengthCkeckAttribute.cs" />
     <Compile Include="EskmsPOCO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
