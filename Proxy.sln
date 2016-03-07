@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proxy", "Proxy\Proxy.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication", "Authentication\Authentication.csproj", "{52506E07-4D3B-418D-95C4-980A39E644AD}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web", "http://localhost:1539", "{FAC008FF-1D88-48C0-B64E-04B7003765BD}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web(2)", "http://localhost:1539", "{FAC008FF-1D88-48C0-B64E-04B7003765BD}"
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
@@ -45,6 +45,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomGenerator_UnitTest", "RandomGenerator_UnitTest\RandomGenerator_UnitTest.csproj", "{EB297614-2859-4866-90B6-1085694E6C97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto.POCO", "Crypto.POCO\Crypto.POCO.csproj", "{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto.ZMK", "Crypto.ZMK\Crypto.ZMK.csproj", "{6B9D67C3-7155-48B7-ACC0-9B4924A8E8BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto.ZMK_UnitTest", "Crypto.ZMK_UnitTest\Crypto.ZMK_UnitTest.csproj", "{5A6F1259-FA52-4D6C-829E-1BE1DBEADBBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -96,6 +100,14 @@ Global
 		{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C13ADE6E-2B57-4E96-A5E7-9CF2F59D661F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B9D67C3-7155-48B7-ACC0-9B4924A8E8BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B9D67C3-7155-48B7-ACC0-9B4924A8E8BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B9D67C3-7155-48B7-ACC0-9B4924A8E8BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B9D67C3-7155-48B7-ACC0-9B4924A8E8BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A6F1259-FA52-4D6C-829E-1BE1DBEADBBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A6F1259-FA52-4D6C-829E-1BE1DBEADBBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A6F1259-FA52-4D6C-829E-1BE1DBEADBBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A6F1259-FA52-4D6C-829E-1BE1DBEADBBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

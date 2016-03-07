@@ -1,0 +1,15 @@
+﻿//Part I
+//1.建立一個不儲存的亂數Z(GUID:16 bytes),需依據輸入的指定執來當作key(即某間特約機構設定的某個代號値,一間特約機構可有很多key,每個key對應一把ZMK値)
+//2.取得加密的ZMK値=>呼叫EsKmsWebAPI的Encrypt方法,帶入參數(KeyLabel:"2ICH3F000002A",IV: 0, Data: "亂數Z的hex String(32個字)")
+//3.取得解密的ZMK値=>呼叫EsKmsWebAPI的Decrypt方法,帶入參數(KeyLabel:"2ICH3F000002A",IV: 0, Data: "從DB取得加密的ZMK値(若取得不到需從AB碼單匯入,恢復DB),hex String(32個字)")
+//2-1. 建立一個不儲存的亂數Z就需要將其拆分成A B碼單(形式:檔案或是手輸入),A為一個任意的Guid的亂數(16 bytes),B <= 亂數Z ^ A亂數 
+//2-2. A B碼單需有前3碼來當檢查碼,檢查輸入的A B碼的正確性
+
+//Part II
+//1.從DB取得加密的ZMK:加密的亂數Z(若取不到需匯入A B碼單來還原),去KMS2.0解密(執行Part I的3)取回原始的亂數Z
+//2.亂數Z(Key:16 bytes)和從亂數表隨意取得一組亂數A(Data:16 bytes)和IV(0:16 bytes)作AES128產生一組SessionKey(16 bytes)
+//3.再從亂數表隨意取得一組亂數B(16 bytes)來當IV
+//4.SessionKey(key) + 0(IV) + 中心端得到的DiverseKey(Data)作AES128產生加密的MK_DATA,用此來作MK_File
+//5.再從亂數表產生一組亂數C(index要給外部的)和SessionKey作XOR得到亂數D(這也是要給外部的16 bytes)
+//6.解密則是 亂數D ^ 亂數C => SessionKey, 外部用SessionKey(key:16 bytes) + 0(IV:16 bytes) + MK_File內的加密MK_DATA(Data:16 bytes)作AES128轉回原始的DiverseKey
+//外部需要亂數B,亂數C(index:自己從亂數表取得)與亂數D(bytes data)即可解開MK_File的被SessionKey加密DiverseKey

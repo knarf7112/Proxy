@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EB297614-2859-4866-90B6-1085694E6C97}</ProjectGuid>
+    <ProjectGuid>{5A6F1259-FA52-4D6C-829E-1BE1DBEADBBA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RandomGenerator_UnitTest</RootNamespace>
-    <AssemblyName>RandomGenerator_UnitTest</AssemblyName>
+    <RootNamespace>Crypto.ZMK_UnitTest</RootNamespace>
+    <AssemblyName>Crypto.ZMK_UnitTest</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -36,9 +36,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -53,14 +50,21 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="SessionKeyGenerator_UnitTest.cs" />
+    <Compile Include="UnitTest_Manager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RndGenerator_UnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RandomGenerator\RandomGenerator.csproj">
-      <Project>{3afa7ac7-bc1f-4c92-a788-aa82ef1df4f2}</Project>
-      <Name>RandomGenerator</Name>
+    <ProjectReference Include="..\Crypto.EskmsAPI\Crypto.EskmsAPI.csproj">
+      <Project>{0ded6403-0a91-48d6-9d7f-54d40e0904ea}</Project>
+      <Name>Crypto.EskmsAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Crypto.ZMK\Crypto.ZMK.csproj">
+      <Project>{6b9d67c3-7155-48b7-acc0-9b4924a8e8ba}</Project>
+      <Name>Crypto.ZMK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Crypto\Crypto.csproj">
+      <Project>{2ae34b10-5d50-498b-917f-7107b49b654e}</Project>
+      <Name>Crypto</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
