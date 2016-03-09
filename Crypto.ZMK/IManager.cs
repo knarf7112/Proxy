@@ -11,7 +11,7 @@ namespace Crypto.ZMK
         /// use KMS 2.0 Libs encrypt ZMK_Data(Random:16 bytes)
         /// </summary>
         /// <returns>Encrypted ZMK data:16 bytes</returns>
-        byte[] GetEncrypt_ZMK_Data();
+        byte[] Generate_ZMK_Data(out byte[] encZMK_Data);
         /// <summary>
         /// use KMS 2.0 Libs decrypt Encrypt_ZMK_Data(16 bytes)
         /// </summary>

@@ -8,6 +8,9 @@ using System.IO;
 
 namespace RandomGenerator
 {
+    /// <summary>
+    /// 提供ZMK處理SessionKey的亂數產生表
+    /// </summary>
     public class RndGenerator : IRndGenerator
     {
         /// <summary>

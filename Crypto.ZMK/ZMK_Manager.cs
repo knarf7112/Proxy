@@ -22,7 +22,7 @@ namespace Crypto.ZMK
         private static IDictionary<string, string> dicKmsLoginConfig;
         private string _keyLabel;
         private byte[] _iv;
-        public byte[] _ZMK_Data;//Temp TODO ...要刪除
+        //public byte[] _ZMK_Data;//Temp TODO ...要刪除
         #endregion
 
         public ZMK_Manager(string keyLabel, byte[] iv)
@@ -65,11 +65,12 @@ namespace Crypto.ZMK
         /// use KMS 2.0 Libs encrypt ZMK_Data(Random:16 bytes)
         /// </summary>
         /// <returns>Encrypted ZMK data:16 bytes</returns>
-        public byte[] GetEncrypt_ZMK_Data()
+        public byte[] Generate_ZMK_Data(out byte[] encZMK_data)
         {
             byte[] randomZMK_Data = this.Gen_Rnd16();
-            this._ZMK_Data = randomZMK_Data;//TODO ...要註解掉
-            return this.KMS_WebApi.Encrypt(this._keyLabel, this._iv, randomZMK_Data);
+            //this._ZMK_Data = randomZMK_Data;//TODO ...要註解掉
+            encZMK_data = this.KMS_WebApi.Encrypt(this._keyLabel, this._iv, randomZMK_Data);
+            return randomZMK_Data;
         }
 
         /// <summary>
