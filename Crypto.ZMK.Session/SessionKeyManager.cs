@@ -10,26 +10,21 @@ using System.Diagnostics;
 
 namespace Crypto.ZMK.Session
 {
-    public class KeyManager : IKeyManager, IDisposable
+    /// <summary>
+    /// SessionKey Handler
+    /// </summary>
+    public class SessionKeyManager : IKeyManager, IDisposable
     {
         private ISymCryptor symCryptor;
 
         private IRndGenerator RndList;
-        
-        public KeyManager()
+
+        public SessionKeyManager()
         {
             this.symCryptor = new SymCryptor("AES");
             this.RndList = new RndGenerator();
             
         }
-
-        //public virtual void GenSessionKey(byte[] zmk_data, out int rndIndex, out byte[] seskey)
-        //{
-        //    byte[] data = this.RndList.Get_Random(out rndIndex);
-        //    this.symCryptor.SetKey(zmk_data);
-        //    this.symCryptor.SetIV(SymCryptor.ConstZero);
-        //    seskey = this.symCryptor.Encrypt(data);
-        //}
 
         /// <summary>
         /// 若有輸入DiverseKey則產生加密的DiverseKey與IV索引値(int)

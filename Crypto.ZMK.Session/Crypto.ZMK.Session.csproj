@@ -35,7 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IKeyManager.cs" />
-    <Compile Include="KeyManager.cs" />
+    <Compile Include="SessionKeyManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

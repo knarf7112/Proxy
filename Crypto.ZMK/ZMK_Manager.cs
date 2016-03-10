@@ -10,19 +10,18 @@ using Crypto.CommonUtility;
 namespace Crypto.ZMK
 {
     /// <summary>
-    /// 
+    /// ZMK_data Handler
     /// </summary>
     public class ZMK_Manager : IZMK_Manager
     {
         private static readonly int KEYLEBAL_LENGTH = 13;
         //private static readonly int IV_LENGTH = 16;//EsKmsWebApi作ECB時,不需要iv
-        public IEsKmsWebApi KMS_WebApi { get; set; }
 
         #region Private Properties
         private static IDictionary<string, string> dicKmsLoginConfig;
         private string _keyLabel;
         private byte[] _iv;
-        //public byte[] _ZMK_Data;//Temp TODO ...要刪除
+        private IEsKmsWebApi _KMS_WebApi;
         #endregion
 
         public ZMK_Manager(string keyLabel, byte[] iv)
@@ -37,7 +36,7 @@ namespace Crypto.ZMK
             }
             this._keyLabel = keyLabel;
             this._iv = iv;
-            this.KMS_WebApi = new EsKmsWebApi()
+            this._KMS_WebApi = new EsKmsWebApi()
             {
                 Url = dicKmsLoginConfig["Url"],
                 //"http://10.27.68.163:8080/eGATEsKMS/interface",
@@ -68,8 +67,7 @@ namespace Crypto.ZMK
         public byte[] Generate_ZMK_Data(out byte[] encZMK_data)
         {
             byte[] randomZMK_Data = this.Gen_Rnd16();
-            //this._ZMK_Data = randomZMK_Data;//TODO ...要註解掉
-            encZMK_data = this.KMS_WebApi.Encrypt(this._keyLabel, this._iv, randomZMK_Data);
+            encZMK_data = this._KMS_WebApi.Encrypt(this._keyLabel, this._iv, randomZMK_Data);
             return randomZMK_Data;
         }
 
@@ -80,7 +78,7 @@ namespace Crypto.ZMK
         /// <returns>Decrypted ZMK data:16 bytes</returns>
         public byte[] GetDecrypt_ZMK_Data(byte[] encryptedData)
         {
-            return this.KMS_WebApi.Decrypt(this._keyLabel, this._iv, encryptedData);
+            return this._KMS_WebApi.Decrypt(this._keyLabel, this._iv, encryptedData);
         }
 
         /// <summary>
@@ -127,7 +125,7 @@ namespace Crypto.ZMK
         /// get guid array : 16 bytes
         /// </summary>
         /// <returns>radom data:16 bytes</returns>
-        public byte[] Gen_Rnd16()
+        public virtual byte[] Gen_Rnd16()
         {
             //generate ZMK_Data
             return Guid.NewGuid().ToByteArray();
