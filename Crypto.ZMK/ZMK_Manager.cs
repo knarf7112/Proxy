@@ -72,6 +72,20 @@ namespace Crypto.ZMK
         }
 
         /// <summary>
+        /// input ZMK_Data(random array) and use KMS 2.0 Libs encrypt ZMK_Data(Random:16 bytes)
+        /// </summary>
+        /// <param name="zmk_data">ZMK_Data(random array)</param>
+        /// <returns>true:encrypt ZMK_Data/false:error</returns>
+        public byte[] Get_EncZMK_Data(byte[] zmk_data)
+        {
+            if (zmk_data.Length != 16)
+            {
+                return null;
+            }
+            return this._KMS_WebApi.Encrypt(this._keyLabel, this._iv, zmk_data);
+        }
+
+        /// <summary>
         /// use KMS 2.0 Libs decrypt Encrypt_ZMK_Data(16 bytes)
         /// </summary>
         /// <param name="encryptedData">encrypted ZMK data</param>

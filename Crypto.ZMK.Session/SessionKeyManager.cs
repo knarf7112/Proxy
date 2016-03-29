@@ -54,6 +54,64 @@ namespace Crypto.ZMK.Session
         }
 
         /// <summary>
+        /// 依索引値與ZMK_data取得SessionKey
+        /// </summary>
+        /// <param name="key">ZNK_data</param>
+        /// <param name="rndIndex">random list index</param>
+        /// <returns>SessionKey:16 bytes</returns>
+        public virtual byte[] Get_SessionKey(byte[] key, int rndIndex)
+        {
+            byte[] enc_data = null;
+            //隨機輸出一組16 bytes random陣列與其位置索引値
+            byte[] data = this.RndList.Get_RandomFromIndex(rndIndex);
+            this.symCryptor.SetKey(key);
+            this.symCryptor.SetIV(SymCryptor.ConstZero);
+            //SessionKey(Key) + Ran(IV) + DiverseKey(Data) => Encrypted_DiverseKey
+            enc_data = this.symCryptor.Encrypt(data);
+            return enc_data;
+        }
+
+        /// <summary>
+        /// 依索引取得隨機陣列的物件
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public virtual byte[] Get_RanDom_data(int index)
+        {
+            return this.RndList.Get_RandomFromIndex(index);
+        }
+
+        /// <summary>
+        /// 作AES加密資料,設定Key與依據指定索引從隨機表取得陣列並設定iv
+        /// </summary>
+        /// <param name="key">key</param>
+        /// <param name="rndIndex">隨機物件列表的索引</param>
+        /// <param name="data">要加密的</param>
+        /// <returns>加密後的數據</returns>
+        public virtual byte[] Encrypt_data(byte[] key, int rndIndex, byte[] data)
+        {
+            byte[] enc_data = null;
+            //隨機輸出一組16 bytes random陣列與其位置索引値
+            byte[] iv = this.RndList.Get_RandomFromIndex(rndIndex);
+            this.symCryptor.SetKey(key);
+            this.symCryptor.SetIV(iv);
+            //SessionKey(Key) + Ran(IV) + DiverseKey(Data) => Encrypted_DiverseKey
+            enc_data = this.symCryptor.Encrypt(data);
+            return enc_data;
+        }
+
+        /// <summary>
+        /// 從隨機列表內取得一組隨機索引
+        /// </summary>
+        /// <returns>random index</returns>
+        public virtual int Get_RandomIndex()
+        {
+            int rndIndex = -1;
+            this.RndList.Get_Random(out rndIndex);
+            return rndIndex;
+        }
+
+        /// <summary>
         /// 若有輸入亂數表索引値則解密EncDiverseKey
         /// 若無輸入亂數表索引値則還原SessionKey的原始Data(即亂數表的指定索引陣列:16 bytes)
         /// </summary>
